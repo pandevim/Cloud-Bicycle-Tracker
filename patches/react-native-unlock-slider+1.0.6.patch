@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-unlock-slider/src/index.js b/node_modules/react-native-unlock-slider/src/index.js
+index c25b367..ff36669 100644
+--- a/node_modules/react-native-unlock-slider/src/index.js
++++ b/node_modules/react-native-unlock-slider/src/index.js
+@@ -73,7 +73,7 @@ export default class Slider extends Component {
+     };
+ 
+     resetBar() {
+-        Animated.timing(this.state.offsetX, { toValue: 0 }).start();
++        Animated.timing(this.state.offsetX, { toValue: 0, useNativeDriver: true }).start();
+         this.setState({childOpacity: 1, offsetX: new Animated.Value(0)})
+     }
+ 
