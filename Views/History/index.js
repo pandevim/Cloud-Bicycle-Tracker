@@ -1,12 +1,12 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 
-const Menu = () => {
+const History = () => {
   return (
     <View>
-      <Text>Menu</Text>
+      <Text>History</Text>
     </View>
   )
 }
 
-export default Menu
+export default History

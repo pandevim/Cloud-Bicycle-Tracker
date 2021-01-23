@@ -1,19 +1,24 @@
-import React, { useState } from "react"
+import 'react-native-gesture-handler'
 
+import React, { useState } from "react"
 import {
   StyleSheet,
   StatusBar,
   PermissionsAndroid,
   Alert,
-  Vibration
+  Vibration,
+  Button
 } from "react-native"
 
 import SendSMS from 'react-native-sms-x'
 
-import Map from "Views/Map"
-import Menu from "Views/Menu"
+import { NavigationContainer } from '@react-navigation/native'
+import { createDrawerNavigator } from '@react-navigation/drawer'
+// import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack'
 
-import EmergencyVolume from "Components/EmergencyVolume"
+import { Home, Profile, Contacts, Settings, History } from "Views"
+
+import { EmergencyVolume } from "Components"
 
 import AppContext from "context/app-context.js"
 
@@ -68,6 +73,9 @@ const AppProvider = (props) => {
   )
 }
 
+// const Stack = createStackNavigator()
+const Drawer = createDrawerNavigator()
+
 const App: () => React$Node = () => {
 
   PermissionsAndroid.requestMultiple([
@@ -81,8 +89,15 @@ const App: () => React$Node = () => {
       <StatusBar barStyle="default" />
       <AppProvider>
         <EmergencyVolume />
-        <Map />
-        <Menu />
+        <NavigationContainer>
+          <Drawer.Navigator initialRouteName="Home">
+            <Drawer.Screen name="Profile" component={Profile} />
+            <Drawer.Screen name="Home" component={Home} />
+            <Drawer.Screen name="History" component={History} />
+            <Drawer.Screen name="Contacts" component={Contacts} />
+            <Drawer.Screen name="Settings" component={Settings} />
+          </Drawer.Navigator>
+        </NavigationContainer>
       </AppProvider>
     </>
   )

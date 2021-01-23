@@ -12,14 +12,11 @@ const Contacts = () => {
   return (
 		<AppContext.Consumer>
 			{context => (
-				<>
-					<Text>Contacts</Text>
-					<TouchableOpacity onPress={() => context.updateContacts(context.contacts)}>
-						<View>
-							<Text>Update Contacts</Text>
-						</View>
-					</TouchableOpacity>
-				</>
+				<TouchableOpacity onPress={() => context.updateContacts(context.contacts)}>
+					<View>
+						<Text>Update Contacts</Text>
+					</View>
+				</TouchableOpacity>
 			)}
 		</AppContext.Consumer>
   )

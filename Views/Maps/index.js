@@ -5,22 +5,22 @@ import { MAPBOX_API_TOKEN } from "@env"
 
 import MapboxGL from '@react-native-mapbox-gl/maps'
 
-import EmergencySlider from "Components/EmergencySlider"
-import Location from "Components/Location"
-import Metrics from "Components/Metrics"
-import Navigation from "Components/Navigation"
+import { EmergencySlider, Location, Metrics, Navigation } from "Components"
 
-const Map = () => {
+const Maps = ({ navigation }) => {
 
 	MapboxGL.setAccessToken(`${MAPBOX_API_TOKEN}`)
 	MapboxGL.setTelemetryEnabled(false)
 
 	return (
     <>
-      {/* <MapboxGL.MapView style={{flex: 1}} /> */}
+      { /*<MapboxGL.MapView style={{flex: 1}} /> */}
+      <Metrics />
+      <Location />
+      <Navigation />
       <EmergencySlider />
     </>
 	)
 }
 
-export default Map
+export default Maps
