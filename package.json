@@ -27,6 +27,7 @@
     "react-native-screens": "^2.15.2",
     "react-native-sms-x": "^1.0.7",
     "react-native-unlock-slider": "^1.0.6",
+    "react-native-vector-icons": "^8.0.0",
     "react-native-volume-control": "^1.0.1"
   },
   "devDependencies": {
