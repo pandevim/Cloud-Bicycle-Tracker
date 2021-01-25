@@ -1,5 +1,17 @@
 # Cloud
 
+TODOs:
+at the end of the project exclued all uncessary icons and delete them from `Cloud\android\app\src\main\assets\fonts`
+
+```gradle
+project.ext.vectoricons = [
+    iconFontNames: [ 'MaterialIcons.ttf', 'EvilIcons.ttf' ]
+]
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+```
+
+
 ## Prerequisites
 These dependencies can be equal or greater.
 ```bash
