@@ -1,27 +1,24 @@
-import 'react-native-gesture-handler'
-
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   StyleSheet,
   StatusBar,
   PermissionsAndroid,
   Alert,
   Vibration,
-  Button
+  TouchableOpacity,
+  Text,
+  View
 } from "react-native"
 
 import SendSMS from 'react-native-sms-x'
 
+import { EmergencyVolume, ProfileDrawerItem } from "Components"
+import { Home, Profile, Settings, Contacts, History } from "Views"
+
 import { NavigationContainer } from '@react-navigation/native'
 import { createDrawerNavigator } from '@react-navigation/drawer'
-// import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack'
-
-import { Home, Profile, Contacts, Settings, History } from "Views"
-
-import { EmergencyVolume } from "Components"
 
 import AppContext from "context/app-context.js"
-
 const AppProvider = (props) => {
 
   const [ state, setState ] = useState({
@@ -73,7 +70,6 @@ const AppProvider = (props) => {
   )
 }
 
-// const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
 const App: () => React$Node = () => {
@@ -81,25 +77,23 @@ const App: () => React$Node = () => {
   PermissionsAndroid.requestMultiple([
     PermissionsAndroid.PERMISSIONS.SEND_SMS
   ])
-  .then( granted => console.log(JSON.stringify(granted)))
+  // .then( granted => console.log(JSON.stringify(granted)))
   .catch( err => console.warn(err) )
 
   return (
-    <>
+    <NavigationContainer>
       <StatusBar barStyle="default" />
       <AppProvider>
         <EmergencyVolume />
-        <NavigationContainer>
-          <Drawer.Navigator initialRouteName="Home">
-            <Drawer.Screen name="Profile" component={Profile} />
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="History" component={History} />
-            <Drawer.Screen name="Contacts" component={Contacts} />
-            <Drawer.Screen name="Settings" component={Settings} />
-          </Drawer.Navigator>
-        </NavigationContainer>
+        <Drawer.Navigator initialRouteName="Home" drawerType="slide" screenOptions={{ headerShown: true }}>
+          <Drawer.Screen name="Profile" component={Profile} options={{ drawerLabel: props => (<ProfileDrawerItem {...props} />)}} />
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Contacts" component={Contacts} />
+          <Drawer.Screen name="History" component={History} />
+          <Drawer.Screen name="Settings" component={Settings} />
+        </Drawer.Navigator>
       </AppProvider>
-    </>
+    </NavigationContainer>
   )
 }
 

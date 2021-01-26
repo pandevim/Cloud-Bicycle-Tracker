@@ -5,7 +5,6 @@ import { MAPBOX_API_TOKEN } from "@env"
 
 import MapboxGL from '@react-native-mapbox-gl/maps'
 
-import { EmergencySlider, Location, Metrics, Navigation } from "Components"
 
 const Maps = ({ navigation }) => {
 
@@ -15,10 +14,6 @@ const Maps = ({ navigation }) => {
 	return (
     <>
       { /*<MapboxGL.MapView style={{flex: 1}} /> */}
-      <Metrics />
-      <Location />
-      <Navigation />
-      <EmergencySlider />
     </>
 	)
 }

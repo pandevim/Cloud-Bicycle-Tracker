@@ -1,6 +1,7 @@
 import React from 'react'
 import { Image } from 'react-native'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 export const Icon = () => <></>
 
@@ -31,3 +32,6 @@ Icon.Navigation = Navigation
 import { images } from "constants"
 export const Check = () => <Image style={{ width: 30, height: 30 }} source={images.check_circle}/>
 Icon.Check = Check
+
+export const Person = (props) => <Ionicons name="person-circle-outline" size={props.size} color={props.color} />
+Icon.Person = Person
