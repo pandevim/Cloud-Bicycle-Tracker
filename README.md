@@ -15,6 +15,7 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 ## Prerequisites
 These dependencies can be equal or greater.
 ```bash
+$ nvm use latest
 $ node -v && npm -v && yarn -v
 v15.6.0
 7.4.0

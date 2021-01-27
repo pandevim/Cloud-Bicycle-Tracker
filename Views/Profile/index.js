@@ -3,7 +3,7 @@ import { Text, View, Button } from 'react-native'
 
 import auth from '@react-native-firebase/auth'
 
-import { Details, SignIn, SignUp } from "Views"
+import { Details, SignIn } from "Views"
 
 import AppContext from "context/app-context.js"
 
@@ -26,9 +26,8 @@ const Profile = ({ navigation }) => {
   	? <Text>Loading...</Text>
   	: (
 	    <>
-		  	<Details />
-		  	<SignIn />
-		  	<SignUp />
+        {/* (user) ? <Details /> : <SignIn /> */}
+        <SignIn />
 	    </>
   	)
 }

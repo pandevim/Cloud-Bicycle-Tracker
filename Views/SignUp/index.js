@@ -1,60 +1,59 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, StyleSheet } from 'react-native'
 
-import { Form } from "Components"
+// import { Picker } from '@react-native-picker/picker'
 
 const SignUp = () => {
   return (
-  	<Form
-  		type="sign-up"
-  		fields={{
-  			email: {
-  				label: 'Email',
-  				type: "email"
-  			},
-  			password: {
-  				label: 'password',
-  				type: "password"
-  			},
-  			confirmPassword: {
-  				label: 'Confirm Password',
-  				type: "password"
-  			},
-  			name: {
-  				label: 'Name',
-  				type: "text"
-  			},
-  			age: {
-  				label: 'Age',
-  				type: "number"
-  			},
-  			sex: {
-  				label: 'Sex',
-  				type: "picker",
-  				pickerOptions: ["Male", "Female"]
-  			},
-  			height: {
-  				label: 'Height',
-  				type: "number"
-  			},
-  			weight: {
-  				label: 'Weight',
-  				type: "number"
-  			},
-  			mets: {
-  				label: 'Mets',
-  				type: "picker",
-  				pickerOptions: [
-  					"bicycling, general",
-  					"bicycling, racing",
-  					"bicycling, mountain, general",
-  					"bicycling, mountain, uphill, vigorous"
-  				]
-  			}
-  		}} 
-  	/>
+    <View style={styles.container}>
+      <Text>sgn iup</Text>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    fontFamily: "Roboto"
+  },
+  heading: {
+    padding: 50,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E2EDFF"
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 50,
+    color: "#1873FF"
+  },
+  form: {
+    padding: 20
+  },
+  field: {},
+  error: {
+    color: "#BABABA"
+  },
+  label: {
+    color: "black",
+    fontWeight: "bold",
+    paddingTop: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 5,
+    height: 40,
+  },
+  register: {
+    padding: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }
+})
 
 export default SignUp	
 
