@@ -11,6 +11,7 @@ import {
 } from "react-native"
 
 import SendSMS from 'react-native-sms-x'
+import auth from '@react-native-firebase/auth'
 
 import { EmergencyVolume, ProfileDrawerItem } from "Components"
 import { Home, Profile, Settings, Contacts, History } from "Views"
@@ -21,7 +22,12 @@ import { createDrawerNavigator } from '@react-navigation/drawer'
 import AppContext from "context/app-context.js"
 const AppProvider = (props) => {
 
+  const [signedIn, setSignedIn] = useState(false)
+
   const [ state, setState ] = useState({
+    details: {
+      name: null
+    },
     contacts: [
       {
         id: "1",
@@ -46,6 +52,20 @@ const AppProvider = (props) => {
     console.log('updateContacts', contacts)
   }
 
+  const signIn = (email, password) => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((e) => {setSignedIn(true); console.log(e)})
+      .catch(error => console.error(error))
+  }
+
+  const signUp = (email, password) => {
+    auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(() => {setSignedIn(true); console.log(e)})
+      .catch(error => console.error(error))
+  }
+
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
     // const { place, latitude, longitude } = state.location
@@ -59,11 +79,15 @@ const AppProvider = (props) => {
   return (
     <AppContext.Provider 
       value={{ 
+        auth: state.auth,
+        details: state.details,
         contacts: state.contacts,
         location: state.location,
         cyclistName: state.cyclistName,
         updateContacts: updateContacts,
-        sendEmergencySMS: sendEmergencySMS
+        sendEmergencySMS: sendEmergencySMS,
+        signIn: signIn,
+        signUp: signUp
       }}>
       {props.children}
     </AppContext.Provider>
