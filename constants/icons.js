@@ -6,36 +6,36 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 export const Icon = () => <></>
 
-export const DirectionsBike = () => <MaterialIcon name="directions-bike" size={30} color="#000000" />
+export const DirectionsBike = (props) => <MaterialIcon name="directions-bike" size={30} color="#000000" style={props.style} />
 Icon.DirectionsBike = DirectionsBike
 
-export const Speed = () => <MaterialIcon name="speed" size={30} color="#000000" />
+export const Speed = (props) => <MaterialIcon name="speed" size={30} color="#000000" style={props.style} />
 Icon.Speed = Speed
 
-export const ErrorOutline = () => <MaterialIcon name="error-outline" size={30} color="#000000" />
+export const ErrorOutline = (props) => <MaterialIcon name="error-outline" size={30} color="#000000" style={props.style} />
 Icon.ErrorOutline = ErrorOutline
 
-export const Menu = () => <MaterialIcon name="menu" size={30} color="#000000" />
+export const Menu = (props) => <MaterialIcon name="menu" size={30} color="#000000" style={props.style} />
 Icon.Menu = Menu
 
-export const Time = () => <MaterialIcon name="access-time" size={30} color="#000000" />
+export const Time = (props) => <MaterialIcon name="access-time" size={30} color="#000000" style={props.style} />
 Icon.Time = Time
 
-export const Distance = () => <FontAwesome name="road" size={30} color="#000000" />
+export const Distance = (props) => <FontAwesome name="road" size={30} color="#000000" style={props.style} />
 Icon.Distance = Distance
 
-export const Add = () => <MaterialIcon name="add" size={30} color="#000000" />
+export const Add = (props) => <MaterialIcon name="add" size={30} color="#000000" style={props.style} />
 Icon.Add = Add
 
-export const Navigation = () => <MaterialIcon name="navigation" size={30} color="#000000" />
+export const Navigation = (props) => <MaterialIcon name="navigation" size={30} color="#000000" style={props.style} />
 Icon.Navigation = Navigation
 
 import { images } from "constants"
-export const Check = () => <Image style={{ width: 30, height: 30 }} source={images.check_circle}/>
+export const Check = (props) => <Image style={props.style} source={images.check_circle}/>
 Icon.Check = Check
 
-export const Person = (props) => <FontAwesome name="circle" size={props.size} color={props.color} />
+export const Person = (props) => <FontAwesome name="circle" size={props.size} color={props.color} style={props.style} />
 Icon.Person = Person
 
-export const Calories = (props) => <FontAwesome name="heartbeat" size={30} color="#000000" />
+export const Calories = (props) => <FontAwesome name="heartbeat" size={30} color="#000000" style={props.style} />
 Icon.Calories = Calories

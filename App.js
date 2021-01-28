@@ -28,29 +28,27 @@ const AppProvider = (props) => {
 
   const [permissions, setPermissions] = useState(null)
   const [initializingFirebase, setInitializingFirebase] = useState(true)
-  const [userInfo, setUserInfo] = useState()
-  const [userState, setUserState] = useState()
+  const [userInfo, setUserInfo] = useState(null)
+  const [userState, setUserState] = useState(null)
   const [contacts, setContacts] = useState(null)
+
+  const [current, setCurrent] = useState({
+    location: "Text Location",
+    street: "Loading...",
+    latitude: 0.00,
+    longitude: 0.00
+  })
   const [metrics, setMetrics] = useState({
-    elapsedTime: "0",
+    elapsedTime: "00:00:00",
     avgSpeed: "0",
     distance: "0",
     maxSpeed: "0",
     calories: "0"
   })
-  const [state, setState] = useState({
-    cyclistName: "cyclist",
-    location: {
-      place: "place",
-      latitude: "latitude",
-      longitude: "longitude"
-    }
-  })
 
   PermissionsAndroid.requestMultiple([
     PermissionsAndroid.PERMISSIONS.SEND_SMS,
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
   ])
   .then( granted => setPermissions(granted))
   .catch( err => console.warn(err) )
@@ -109,8 +107,7 @@ const AppProvider = (props) => {
     if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
     else {
       console.log('contacts send!!')
-      const { place, latitude, longitude } = state.location
-      const helpTex = `!!!EMERGENCY SOS!!!\n${state.cyclistName} has made an Emergency Trigger from \"${place}\" Approximate Location.\nhttps://www.google.com/maps/@${latitude},${longitude},15z`
+      const helpTex = `!!!EMERGENCY SOS!!!\n${userInfo.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
       const messageSent = contacts.map(contact => {
         SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
       })
@@ -118,20 +115,25 @@ const AppProvider = (props) => {
     }
   }
 
+  const toggleNavigation = () => {
+
+  }
+
   return (
     <AppContext.Provider 
       style={{ fontFamily: "Roboto"}}
       value={{ 
         permissions: permissions,
+        current: current,
         metrics: metrics,
         userInfo: userInfo,
-        location: state.location,
-        cyclistName: state.cyclistName,
-        updateContacts: updateContacts,
-        sendEmergencySMS: sendEmergencySMS,
         initializingFirebase: initializingFirebase,
         userState: userState,
-        updateUserInfo: updateUserInfo
+
+        updateContacts: updateContacts,
+        sendEmergencySMS: sendEmergencySMS,
+        updateUserInfo: updateUserInfo,
+        toggleNavigation: toggleNavigation
       }}>
       {props.children}
     </AppContext.Provider>

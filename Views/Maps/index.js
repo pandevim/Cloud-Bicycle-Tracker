@@ -14,7 +14,7 @@ const Maps = ({ navigation }) => {
 	MapboxGL.setTelemetryEnabled(false)
 
 	return (
-    <View style={styles.map}>
+    <View style={styles.container}>
       <MapView
       	style={{flex: 1}}
       	styleURL={MapboxGL.StyleURL.Streets}
@@ -31,10 +31,11 @@ const Maps = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  map: {
+  container: {
     flex: 1,
     width: "100%",
-    height: "100%"
+    height: "100%",
+    backgroundColor: 'pink'
   }
 })
 
