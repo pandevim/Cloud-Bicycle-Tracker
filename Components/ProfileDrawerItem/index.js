@@ -1,24 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AppContext from "context/app-context.js"
 
 import { Icon } from "constants"
 
 const ProfileDrawerItem = () => {
 
-  const [info, setInfo] = useState(null)
-
-  const getInfo = useCallback(async () => {
-    try {
-      const info = await AsyncStorage.getItem('@info')
-      setInfo(info != null ? JSON.parse(info) : null)
-    } catch(e) { console.error(e) }
-  }, [])
-
-  useEffect(() => {
-    getInfo()
-  }, [getInfo])
+  const { userInfo } = useContext(AppContext)
+  console.log(userInfo)
 
   return (
   	<View style={styles.container}>
@@ -27,9 +17,9 @@ const ProfileDrawerItem = () => {
   		</View>
   		<View style={styles.name}>
       {
-        (info)
-          ? <Text>{info.user.displayName}</Text>
-  			  : <Text style={{color: "#ec4e20"}}>Sign In</Text>
+        (userInfo)
+          ? <Text>{userInfo.name}</Text>
+  			  : <Text style={{color: "#1873FF"}}>Sign In</Text>
       }
   		</View>
   	</View>

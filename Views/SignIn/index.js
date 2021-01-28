@@ -1,16 +1,15 @@
 import React, { useState, useContext, useRef, useEffect } from 'react'
-import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native'
+import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert } from 'react-native'
 
 import { useForm, Controller } from "react-hook-form"
+import auth from '@react-native-firebase/auth'
 
 import AppContext from "context/app-context.js"
 
-const SignIn = () => {
+const SignIn = ({ navigation }) => {
 
   const emailRef = useRef()
   const passwordRef = useRef()
-
-  const { signIn } = useContext(AppContext)
 
   const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   const passwordPattern = /.*/
@@ -22,13 +21,25 @@ const SignIn = () => {
   const { control, handleSubmit, errors } = useForm()
   const onSubmit = ({ email, password }) => signIn(email, password)
 
+  const signIn = (email, password) => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch(error => {
+        console.error(error)
+        Alert.alert("Error", error.code)
+      })
+  }
+
   useEffect(() => {
     if ( errors.email && errors.email.type === "pattern" ) setEmailError("Invalid Email")
-    else if ( errors.email && errors.email.type === "required" ) setEmailError("Email Required")
+    else if ( errors.email && errors.email.type === "required" ) setEmailError("This filed is required.")
     else setEmailError("")
 
     if ( errors.password && errors.password.type === "pattern" ) setPassowordError("Invalid Password")
-    else if ( errors.password && errors.password.type === "required" ) setPassowordError("Password Required")
+    else if ( errors.password && errors.password.type === "required" ) setPassowordError("This filed is required.")
     else setPassowordError("")
 
     // Password must be:
@@ -88,7 +99,7 @@ const SignIn = () => {
           <Text style={styles.error}>{passowordError}</Text>
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.register}>
+      <TouchableOpacity style={styles.register} onPress={() => navigation.navigate('SignUp')}>
         <Text style={{color: "#9c9191", textDecorationLine: 'underline'}}>Register?</Text>
       </TouchableOpacity>
       <Button color="#1873FF" title="sign in" onPress={handleSubmit(onSubmit)} />
@@ -116,7 +127,9 @@ const styles = StyleSheet.create({
     color: "#1873FF"
   },
   form: {
-    padding: 20
+    padding: 20,
+    paddingLeft: 30,
+    paddingRight: 30
   },
   field: {},
   error: {

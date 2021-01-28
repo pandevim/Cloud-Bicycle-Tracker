@@ -2,6 +2,7 @@ import React from 'react'
 import { Image } from 'react-native'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 export const Icon = () => <></>
 
@@ -33,5 +34,5 @@ import { images } from "constants"
 export const Check = () => <Image style={{ width: 30, height: 30 }} source={images.check_circle}/>
 Icon.Check = Check
 
-export const Person = (props) => <Ionicons name="person-circle-outline" size={props.size} color={props.color} />
+export const Person = (props) => <FontAwesome name="circle" size={props.size} color={props.color} />
 Icon.Person = Person

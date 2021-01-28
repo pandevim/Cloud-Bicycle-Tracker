@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import {
   StyleSheet,
   StatusBar,
@@ -10,8 +10,11 @@ import {
   View
 } from "react-native"
 
-import SendSMS from 'react-native-sms-x'
 import auth from '@react-native-firebase/auth'
+
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import SendSMS from 'react-native-sms-x'
 
 import { EmergencyVolume, ProfileDrawerItem } from "Components"
 import { Home, Profile, Settings, Contacts, History } from "Views"
@@ -22,12 +25,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer'
 import AppContext from "context/app-context.js"
 const AppProvider = (props) => {
 
-  const [signedIn, setSignedIn] = useState(false)
-
+  const [initializingFirebase, setInitializingFirebase] = useState(true)
+  const [userInfo, setUserInfo] = useState({})
+  const [userState, setUserState] = useState()
   const [ state, setState ] = useState({
-    details: {
-      name: null
-    },
     contacts: [
       {
         id: "1",
@@ -52,28 +53,27 @@ const AppProvider = (props) => {
     console.log('updateContacts', contacts)
   }
 
-  const signIn = (email, password) => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((e) => {setSignedIn(true); console.log(e)})
-      .catch(error => console.error(error))
+  const onAuthStateChanged = user => {
+    setUserState(user)
+    setInitializingFirebase(false)
   }
 
-  const signUp = (email, password) => {
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {setSignedIn(true); console.log(e)})
-      .catch(error => console.error(error))
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
+    return subscriber
+  }, [])
 
-// const storeData = async (value) => {
-//   try {
-//     const jsonValue = JSON.stringify(value)
-//     await AsyncStorage.setItem('@storage_Key', jsonValue)
-//   } catch (e) {
-//     // saving error
-//   }
-// }
-  }
+  const getUserInfo = useCallback(async () => {
+    console.log('here')
+    try {
+      const userInfo = await AsyncStorage.getItem('@user_info')
+      setUserInfo(userInfo != null ? JSON.parse(userInfo) : null)
+    } catch(e) { console.error(e) }
+  }, [])
+
+  useEffect(() => {
+    getUserInfo()
+  }, [getUserInfo])
 
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
@@ -87,16 +87,16 @@ const AppProvider = (props) => {
 
   return (
     <AppContext.Provider 
+      style={{ fontFamily: "Roboto"}}
       value={{ 
-        auth: state.auth,
-        details: state.details,
+        userInfo: state.userInfo,
         contacts: state.contacts,
         location: state.location,
         cyclistName: state.cyclistName,
         updateContacts: updateContacts,
         sendEmergencySMS: sendEmergencySMS,
-        signIn: signIn,
-        signUp: signUp
+        initializingFirebase: initializingFirebase,
+        userState: userState
       }}>
       {props.children}
     </AppContext.Provider>
