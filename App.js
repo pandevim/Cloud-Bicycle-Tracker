@@ -23,8 +23,10 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 
 import AppContext from "context/app-context.js"
+
 const AppProvider = (props) => {
 
+  const [permissions, setPermissions] = useState(null)
   const [initializingFirebase, setInitializingFirebase] = useState(true)
   const [userInfo, setUserInfo] = useState()
   const [userState, setUserState] = useState()
@@ -45,6 +47,14 @@ const AppProvider = (props) => {
     }
   })
 
+  PermissionsAndroid.requestMultiple([
+    PermissionsAndroid.PERMISSIONS.SEND_SMS,
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+  ])
+  .then( granted => setPermissions(granted))
+  .catch( err => console.warn(err) )
+
   const storeDataLocally = async (value, key) => {
     try {
       const data = JSON.stringify(value)
@@ -60,6 +70,7 @@ const AppProvider = (props) => {
 
   const updateContacts = contacts => {
     console.log('updateContacts', contacts)
+    setContacts(contacts)
     Alert.alert("SUCCESS", "Contacts saved.")
     storeDataLocally(contacts, '@emergency_contacts')
   }
@@ -98,12 +109,12 @@ const AppProvider = (props) => {
     if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
     else {
       console.log('contacts send!!')
-      // const { place, latitude, longitude } = state.location
-      // const helpTex = `!!!EMERGENCY SOS!!!\n${state.cyclistName} has made an Emergency Trigger from \"${place}\" Approximate Location.\nhttps://www.google.com/maps/@${latitude},${longitude},15z`
-      // const messageSent = contacts.map(contact => {
-      //   SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
-      // })
-      // Alert.alert(`Emergency Alert`, `Message sent successfully to ${state.contacts.map(contact => contact.name).toString()} from your emergency contacts.`)
+      const { place, latitude, longitude } = state.location
+      const helpTex = `!!!EMERGENCY SOS!!!\n${state.cyclistName} has made an Emergency Trigger from \"${place}\" Approximate Location.\nhttps://www.google.com/maps/@${latitude},${longitude},15z`
+      const messageSent = contacts.map(contact => {
+        SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
+      })
+      Alert.alert(`Emergency Alert`, `Message sent successfully to ${contacts.map(contact => contact.name).toString()} from your emergency contacts.`)
     }
   }
 
@@ -111,6 +122,7 @@ const AppProvider = (props) => {
     <AppContext.Provider 
       style={{ fontFamily: "Roboto"}}
       value={{ 
+        permissions: permissions,
         metrics: metrics,
         userInfo: userInfo,
         location: state.location,
@@ -129,16 +141,6 @@ const AppProvider = (props) => {
 const Drawer = createDrawerNavigator()
 
 const App: () => React$Node = () => {
-
-  const [permissions, setPermissions] = useState()
-
-  PermissionsAndroid.requestMultiple([
-    PermissionsAndroid.PERMISSIONS.SEND_SMS,
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
-  ])
-  .then( granted => setPermissions(granted))
-  .catch( err => console.warn(err) )
 
   return (
     <NavigationContainer>
