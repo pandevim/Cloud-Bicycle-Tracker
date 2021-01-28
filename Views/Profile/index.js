@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, Button, StyleSheet, ScrollView, TextInput } from 'react-native'
+import { Text, View, Button, StyleSheet, ScrollView, TextInput, Alert } from 'react-native'
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack'
 import auth from '@react-native-firebase/auth'
 import { Details, SignIn, SignUp } from "Views"
@@ -11,7 +11,7 @@ const Stack = createStackNavigator()
 
 const Profile = ({ navigation }) => {
 
-  const { initializingFirebase, userState } = useContext(AppContext)
+  const { initializingFirebase, userState, userInfo } = useContext(AppContext)
 
   const [mets, setMets] = useState("6.8")
 

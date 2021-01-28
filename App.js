@@ -26,21 +26,17 @@ import AppContext from "context/app-context.js"
 const AppProvider = (props) => {
 
   const [initializingFirebase, setInitializingFirebase] = useState(true)
-  const [userInfo, setUserInfo] = useState({})
+  const [userInfo, setUserInfo] = useState()
   const [userState, setUserState] = useState()
-  const [ state, setState ] = useState({
-    contacts: [
-      {
-        id: "1",
-        name: "name1",
-        number: "+919630997999"
-      },
-      {
-        id: "2",
-        name: "name2",
-        number: "+919630997999"
-      }
-    ],
+  const [contacts, setContacts] = useState(null)
+  const [metrics, setMetrics] = useState({
+    elapsedTime: "0",
+    avgSpeed: "0",
+    distance: "0",
+    maxSpeed: "0",
+    calories: "0"
+  })
+  const [state, setState] = useState({
     cyclistName: "cyclist",
     location: {
       place: "place",
@@ -49,8 +45,23 @@ const AppProvider = (props) => {
     }
   })
 
+  const storeDataLocally = async (value, key) => {
+    try {
+      const data = JSON.stringify(value)
+      await AsyncStorage.setItem(key, data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const updateUserInfo = data => {
+    setUserInfo(data)
+  }
+
   const updateContacts = contacts => {
     console.log('updateContacts', contacts)
+    Alert.alert("SUCCESS", "Contacts saved.")
+    storeDataLocally(contacts, '@emergency_contacts')
   }
 
   const onAuthStateChanged = user => {
@@ -64,39 +75,51 @@ const AppProvider = (props) => {
   }, [])
 
   const getUserInfo = useCallback(async () => {
-    console.log('here')
     try {
-      const userInfo = await AsyncStorage.getItem('@user_info')
-      setUserInfo(userInfo != null ? JSON.parse(userInfo) : null)
+      const data = await AsyncStorage.getItem('@user_info')
+      return data != null ? JSON.parse(data) : null
+    } catch(e) { console.error(e) }
+  }, [])
+
+  const getEmergencyContacts = useCallback(async () => {
+    try {
+      const data = await AsyncStorage.getItem('@emergency_contacts')
+      return data != null ? JSON.parse(data) : null
     } catch(e) { console.error(e) }
   }, [])
 
   useEffect(() => {
     getUserInfo()
+    getEmergencyContacts()
   }, [getUserInfo])
 
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
-    // const { place, latitude, longitude } = state.location
-    // const helpTex = `!!!EMERGENCY SOS!!!\n${state.cyclistName} has made an Emergency Trigger from \"${place}\" Approximate Location.\nhttps://www.google.com/maps/@${latitude},${longitude},15z`
-    // const messageSent = state.contacts.map(contact => {
-    //   SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
-    // })
-    // Alert.alert(`Emergency Alert`, `Message sent successfully to ${state.contacts.map(contact => contact.name).toString()} from your emergency contacts.`)
+    if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
+    else {
+      console.log('contacts send!!')
+      // const { place, latitude, longitude } = state.location
+      // const helpTex = `!!!EMERGENCY SOS!!!\n${state.cyclistName} has made an Emergency Trigger from \"${place}\" Approximate Location.\nhttps://www.google.com/maps/@${latitude},${longitude},15z`
+      // const messageSent = contacts.map(contact => {
+      //   SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
+      // })
+      // Alert.alert(`Emergency Alert`, `Message sent successfully to ${state.contacts.map(contact => contact.name).toString()} from your emergency contacts.`)
+    }
   }
 
   return (
     <AppContext.Provider 
       style={{ fontFamily: "Roboto"}}
       value={{ 
-        userInfo: state.userInfo,
-        contacts: state.contacts,
+        metrics: metrics,
+        userInfo: userInfo,
         location: state.location,
         cyclistName: state.cyclistName,
         updateContacts: updateContacts,
         sendEmergencySMS: sendEmergencySMS,
         initializingFirebase: initializingFirebase,
-        userState: userState
+        userState: userState,
+        updateUserInfo: updateUserInfo
       }}>
       {props.children}
     </AppContext.Provider>
@@ -107,10 +130,14 @@ const Drawer = createDrawerNavigator()
 
 const App: () => React$Node = () => {
 
+  const [permissions, setPermissions] = useState()
+
   PermissionsAndroid.requestMultiple([
-    PermissionsAndroid.PERMISSIONS.SEND_SMS
+    PermissionsAndroid.PERMISSIONS.SEND_SMS,
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
   ])
-  // .then( granted => console.log(JSON.stringify(granted)))
+  .then( granted => setPermissions(granted))
   .catch( err => console.warn(err) )
 
   return (

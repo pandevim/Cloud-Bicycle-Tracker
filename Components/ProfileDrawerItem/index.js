@@ -8,7 +8,10 @@ import { Icon } from "constants"
 const ProfileDrawerItem = () => {
 
   const { userInfo } = useContext(AppContext)
-  console.log(userInfo)
+
+  useEffect(() => {
+    console.log('userInfo changed!', userInfo)
+  }, [userInfo])
 
   return (
   	<View style={styles.container}>

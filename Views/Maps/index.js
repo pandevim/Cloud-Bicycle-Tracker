@@ -13,7 +13,7 @@ const Maps = ({ navigation }) => {
 
 	return (
     <>
-      { /*<MapboxGL.MapView style={{flex: 1}} /> */}
+      <MapboxGL.MapView style={{flex: 1}} />
     </>
 	)
 }

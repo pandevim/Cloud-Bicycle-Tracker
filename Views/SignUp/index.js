@@ -19,6 +19,8 @@ const SignUp = () => {
   //   updateProfile()
   // }, [updateProfile])
 
+  const { updateUserInfo, storeDataLocally } = useContext(AppContext)
+
   const nameRef = useRef()
   const emailRef = useRef()
   const passwordRef = useRef()
@@ -42,21 +44,13 @@ const SignUp = () => {
       .createUserWithEmailAndPassword(data.email, data.password)
       .then(response => {
         console.log(response)
-        storeDataLocally(data)
+        updateUserInfo(data)
+        storeDataLocally(data, '@user_info')
       })
       .catch(error => {
         console.error(error)
         Alert.alert("Error", error.code)
       })
-  }
-
-  const storeDataLocally = async (value) => {
-    try {
-      const data = JSON.stringify(value)
-      await AsyncStorage.setItem('@user_info', data)
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   useEffect(() => {

@@ -8,7 +8,7 @@ const Home = ({ navigation }) => {
   return (
   	<>
   		<Maps />
-      <Metrics />
+      {/* <Metrics /> */}
       <Location />
       <Navigation />
       <EmergencySlider />

@@ -9,8 +9,8 @@ export const Icon = () => <></>
 export const DirectionsBike = () => <MaterialIcon name="directions-bike" size={30} color="#000000" />
 Icon.DirectionsBike = DirectionsBike
 
-export const ElectricBike = () => <MaterialIcon name="electric-bike" size={30} color="#000000" />
-Icon.ElectricBike = ElectricBike
+export const Speed = () => <MaterialIcon name="speed" size={30} color="#000000" />
+Icon.Speed = Speed
 
 export const ErrorOutline = () => <MaterialIcon name="error-outline" size={30} color="#000000" />
 Icon.ErrorOutline = ErrorOutline
@@ -18,11 +18,11 @@ Icon.ErrorOutline = ErrorOutline
 export const Menu = () => <MaterialIcon name="menu" size={30} color="#000000" />
 Icon.Menu = Menu
 
-export const Schedule = () => <MaterialIcon name="schedule" size={30} color="#000000" />
-Icon.Schedule = Schedule
+export const Time = () => <MaterialIcon name="access-time" size={30} color="#000000" />
+Icon.Time = Time
 
-export const Road = () => <MaterialIcon name="theaters" size={30} color="#000000" />
-Icon.Road = Road
+export const Distance = () => <FontAwesome name="road" size={30} color="#000000" />
+Icon.Distance = Distance
 
 export const Add = () => <MaterialIcon name="add" size={30} color="#000000" />
 Icon.Add = Add
@@ -36,3 +36,6 @@ Icon.Check = Check
 
 export const Person = (props) => <FontAwesome name="circle" size={props.size} color={props.color} />
 Icon.Person = Person
+
+export const Calories = (props) => <FontAwesome name="heartbeat" size={30} color="#000000" />
+Icon.Calories = Calories
