@@ -19,9 +19,9 @@ const Maps = ({ navigation }) => {
 
   useEffect(() => {
     axios.get(`${ROOT_URL}/${SEARCH_ENDPOINT}/${current.longitude},${current.latitude}.json?types=locality&access_token=${MAPBOX_API_TOKEN}`)
-      .then(response => {return response.data.features[0]})
+      .then(response => response.data.features[0])
       .then(({text, place_name}) => setCurrent({ ...current, street: text, location: place_name }))
-      .catch(err => console.error(err))
+      .catch(err => console.log(err))
   }, [current])
 
   const updateCoords = coords => {

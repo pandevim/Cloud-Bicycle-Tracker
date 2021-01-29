@@ -28,7 +28,7 @@ const AppProvider = (props) => {
 
   const [permissions, setPermissions] = useState(null)
   const [initializingFirebase, setInitializingFirebase] = useState(true)
-  const [userInfo, setUserInfo] = useState(null)
+  const [userInfo, setUserInfo] = useState({})
   const [userState, setUserState] = useState(null)
   const [contacts, setContacts] = useState(null)
 
@@ -38,6 +38,7 @@ const AppProvider = (props) => {
     latitude: 0.00,
     longitude: 0.00
   })
+
   const [metrics, setMetrics] = useState({
     elapsedTime: "00:00:00",
     avgSpeed: "0",
@@ -105,6 +106,7 @@ const AppProvider = (props) => {
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
     if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
+    else if (!current) Alert.alert("ERROR", "GPS not working")
     else {
       console.log('contacts send!!')
       const helpTex = `!!!EMERGENCY SOS!!!\n${userInfo.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
