@@ -1,17 +1,36 @@
-import React, { useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-
-import { MAPBOX_API_TOKEN } from "@env"
-
+import axios from 'axios'
 import MapboxGL, { MapView, UserLocation, Camera } from '@react-native-mapbox-gl/maps'
 import AppContext from "context/app-context.js"
 
+import { MAPBOX_API_TOKEN } from "@env"
+const ROOT_URL = "https://api.mapbox.com/geocoding/v5"
+const SEARCH_ENDPOINT = "mapbox.places"
+
 const Maps = ({ navigation }) => {
 
-  const { permissions } = useContext(AppContext)
+  const { permissions, current, setCurrent } = useContext(AppContext)
 
-	MapboxGL.setAccessToken(`${MAPBOX_API_TOKEN}`)
-	MapboxGL.setTelemetryEnabled(false)
+  useEffect(() => {
+    MapboxGL.setAccessToken(`${MAPBOX_API_TOKEN}`)
+    MapboxGL.setTelemetryEnabled(false)
+  }, [])
+
+  useEffect(() => {
+    axios.get(`${ROOT_URL}/${SEARCH_ENDPOINT}/${current.longitude},${current.latitude}.json?types=locality&access_token=${MAPBOX_API_TOKEN}`)
+      .then(response => {return response.data.features[0]})
+      .then(({text, place_name}) => setCurrent({ ...current, street: text, location: place_name }))
+      .catch(err => console.error(err))
+  }, [current])
+
+  const updateCoords = coords => {
+    setCurrent({
+      ...current,    
+      latitude: coords.latitude,
+      longitude: coords.longitude
+    })
+  }
 
 	return (
     <View style={styles.container}>
@@ -20,7 +39,8 @@ const Maps = ({ navigation }) => {
       	styleURL={MapboxGL.StyleURL.Streets}
       	localizeLabels={true}>
       	<UserLocation
-      		minDisplacement={1} />
+      		minDisplacement={1}
+          onUpdate={({coords}) => updateCoords(coords)} />
     		<Camera
     			followUserLocation={true}
     			followUserMode={MapboxGL.UserTrackingModes.FollowWithCourse}
@@ -34,8 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    height: "100%",
-    backgroundColor: 'pink'
+    height: "100%"
   }
 })
 

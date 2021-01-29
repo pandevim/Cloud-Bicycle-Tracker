@@ -133,7 +133,10 @@ const AppProvider = (props) => {
         updateContacts: updateContacts,
         sendEmergencySMS: sendEmergencySMS,
         updateUserInfo: updateUserInfo,
-        toggleNavigation: toggleNavigation
+        toggleNavigation: toggleNavigation,
+
+        current: current,
+        setCurrent: setCurrent
       }}>
       {props.children}
     </AppContext.Provider>

@@ -1,17 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
-
-import AppContext from "context/app-context.js"
-
 import { Icon } from "constants"
 
 const ProfileDrawerItem = () => {
-
-  const { userInfo } = useContext(AppContext)
-
-  useEffect(() => {
-    console.log('userInfo changed!', userInfo)
-  }, [userInfo])
 
   return (
   	<View style={styles.container}>
@@ -19,11 +10,7 @@ const ProfileDrawerItem = () => {
   			<Icon.Person color={"#66717E"} size={60} />
   		</View>
   		<View style={styles.name}>
-      {
-        (userInfo)
-          ? <Text>{userInfo.name}</Text>
-  			  : <Text style={{color: "#1873FF"}}>Sign In</Text>
-      }
+        <Text>Profile</Text>
   		</View>
   	</View>
   )

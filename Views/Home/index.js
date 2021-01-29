@@ -7,7 +7,7 @@ import { Maps } from "Views"
 const Home = () => {
   return (
   	<View style={styles.container}>
-      {/* <Maps /> */}
+      <Maps />
       <View style={styles.main}>
         <Metrics />
         <View style={styles.info}>
