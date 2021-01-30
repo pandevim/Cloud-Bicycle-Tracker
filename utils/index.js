@@ -9,5 +9,10 @@ const limit = (times, callback) => {
   }
 }
 
+import moment from 'moment'
+const formatTime = (hours, minutes, seconds) => {
+  const time = moment.duration({seconds: seconds, minutes: minutes, hours: hours })
+  return moment.utc(time.asMilliseconds()).format("HH:mm:ss")
+}
 
-export { limit }
+export { limit, formatTime }

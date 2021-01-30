@@ -1,35 +1,18 @@
-// import moment from 'moment'
-import React, { useState, useContext, useEffect, useCallback } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Text, View, StyleSheet, ScrollView } from 'react-native'
 import { Icon } from "constants"
 import AppContext from "context/app-context.js"
 import { useStopwatch } from 'react-timer-hook'
-
-const initialTime = 60 * 1000
-const interval = 1000
+import { formatTime } from "utils"
 
 const Metrics = () => {
 
   const { metrics, journey } = useContext(AppContext)
-
+  const {seconds, minutes, hours, start, pause, reset} = useStopwatch({ autoStart: false })
   const[elapsedTime, setElapsedTime] = useState("00:00:00")
 
-  const {
-    seconds,
-    minutes,
-    hours,
-    start,
-    pause,
-    reset,
-  } = useStopwatch({ autoStart: false })
-
   useEffect(() => {
-    // const time = moment.duration({seconds: seconds, minutes: minutes, hours: hours })
-    // console.log(time.format('HH:mm:ss', { trim: false }))
-    const formattedSeconds = seconds.toString().length >= 2 ? seconds : `0${seconds}`
-    const formattedMinutes = minutes.toString().length >= 2 ? minutes : `0${minutes}`
-    const formattedHours = hours.toString().length >= 2 ? hours : `0${hours}`
-    setElapsedTime(`${formattedHours}:${formattedMinutes}:${formattedSeconds}`)
+    setElapsedTime(formatTime(hours, minutes, seconds))
   }, [seconds])
 
   useEffect(() => {
