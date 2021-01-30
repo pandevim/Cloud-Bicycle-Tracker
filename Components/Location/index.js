@@ -1,14 +1,11 @@
 import React, { useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import AppContext from "context/app-context.js"
+import { round } from "utils"
 
 const Location = () => {
 
   const { current } = useContext(AppContext)
-
-  const round = value => {
-    return value
-  }
 
   return (
     <View style={styles.container}>

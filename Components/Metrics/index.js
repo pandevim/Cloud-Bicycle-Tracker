@@ -7,9 +7,10 @@ import { formatTime } from "utils"
 
 const Metrics = () => {
 
-  const { metrics, journey } = useContext(AppContext)
+  const { metrics, journey, current } = useContext(AppContext)
   const {seconds, minutes, hours, start, pause, reset} = useStopwatch({ autoStart: false })
   const[elapsedTime, setElapsedTime] = useState("00:00:00")
+  const[maxSpeed, setMaxSpeed] = useState(0)
 
   useEffect(() => {
     setElapsedTime(formatTime(hours, minutes, seconds))
@@ -21,6 +22,10 @@ const Metrics = () => {
       start()
     } else pause()
   }, [journey])
+
+  useEffect(() => {
+    if (current.speed > maxSpeed) setMaxSpeed(current.speed)
+  }, [current.speed])
 
   return (
     <ScrollView
@@ -37,8 +42,8 @@ const Metrics = () => {
       <View style={styles.item}>
         <Icon.DirectionsBike style={styles.icon} />
         <View style={styles.info}>
-          <Text style={styles.value}>{ metrics.avgSpeed }m/s</Text>
-          <Text style={styles.title}>Avg Speed</Text>
+          <Text style={styles.value}>{ current.speed }m/s</Text>
+          <Text style={styles.title}>Current Speed</Text>
         </View>
       </View>
       <View style={styles.item}>
@@ -51,7 +56,7 @@ const Metrics = () => {
       <View style={styles.item}>
         <Icon.Speed style={styles.icon} />
         <View style={styles.info}>
-          <Text style={styles.value}>{ metrics.maxSpeed }m/s</Text>
+          <Text style={styles.value}>{ maxSpeed }m/s</Text>
           <Text style={styles.title}>Max Speed</Text>
         </View>
       </View>

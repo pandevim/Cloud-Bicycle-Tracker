@@ -11,26 +11,28 @@ const SEARCH_ENDPOINT = "mapbox.places"
 
 const Maps = ({ navigation }) => {
 
-  const { permissions, current, setCurrent } = useContext(AppContext)
+  const { 
+    permissions, 
+    current, setCurrent
+  } = useContext(AppContext)
+
   const [movement, setMovement] = useState(false)
 
   useEffect(() => {
     MapboxGL.setAccessToken(`${MAPBOX_API_TOKEN}`)
     MapboxGL.setTelemetryEnabled(false)
-  }, [])
+  }, [permissions])
 
   useEffect(() => {
     axios.get(`${ROOT_URL}/${SEARCH_ENDPOINT}/${current.longitude},${current.latitude}.json?types=locality&access_token=${MAPBOX_API_TOKEN}`)
       .then(response => response.data.features[0])
       .then(({text, place_name}) => setCurrent({ ...current, street: text, location: place_name }))
       .catch(err => console.log(err))
-  }, [current])
+  }, [current.latitude])
 
   const updateCoords = coords => {
-    console.log('real update')
     limit(10, execute => {
-      console.log('ager limit')
-      setCurrent({...current, latitude: coords.latitude, longitude: coords.longitude})
+      setCurrent({...current, latitude: coords.latitude, longitude: coords.longitude, speed: coords.speed})
     })
   }
 

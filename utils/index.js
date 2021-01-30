@@ -1,7 +1,10 @@
 
 let events = 0
 const limit = (times, callback) => {
-	if (events >= times) {
+	if (events == 0) {
+		events = 1
+		callback()
+	} else if (events >= times) {
   	events = 0
     callback()
   } else {
@@ -15,4 +18,8 @@ const formatTime = (hours, minutes, seconds) => {
   return moment.utc(time.asMilliseconds()).format("HH:mm:ss")
 }
 
-export { limit, formatTime }
+const round = (num) => {
+	return Math.round((num + Number.EPSILON) * 100) / 100
+}
+
+export { limit, formatTime, round }

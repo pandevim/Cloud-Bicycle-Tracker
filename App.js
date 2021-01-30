@@ -45,13 +45,12 @@ const AppProvider = (props) => {
     location: "",
     street: "Loading...",
     latitude: 0.00,
-    longitude: 0.00
+    longitude: 0.00,
+    speed: 0.00
   })
 
   const [metrics, setMetrics] = useState({
-    avgSpeed: "0",
     distance: "0",
-    maxSpeed: "0",
     calories: "0"
   })
 
@@ -122,7 +121,6 @@ const AppProvider = (props) => {
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
     if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
-    else if (!current.location) Alert.alert("ERROR", "GPS not working")
     else {
       console.log('contacts send!!')
       const helpTex = `!!!EMERGENCY SOS!!!\n${userInfo.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
@@ -140,7 +138,6 @@ const AppProvider = (props) => {
       style={{ fontFamily: "Roboto"}}
       value={{ 
         permissions: permissions,
-        metrics: metrics,
         initializingFirebase: initializingFirebase,
         userState: userState,
 
@@ -150,6 +147,9 @@ const AppProvider = (props) => {
 
         storeDataLocally: storeDataLocally,
         resetDataLocally: resetDataLocally,
+        
+        metrics: metrics,
+        setMetrics: setMetrics,
 
         userInfo: userInfo,
         setUserInfo: setUserInfo,
