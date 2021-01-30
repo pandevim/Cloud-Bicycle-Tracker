@@ -12,7 +12,7 @@ Icon.DirectionsBike = DirectionsBike
 export const Speed = (props) => <MaterialIcon name="speed" size={30} color="#000000" style={props.style} />
 Icon.Speed = Speed
 
-export const ErrorOutline = (props) => <MaterialIcon name="error-outline" size={30} color="#000000" style={props.style} />
+export const ErrorOutline = (props) => <MaterialIcon name="error-outline" size={props.size} color="white" style={props.style} />
 Icon.ErrorOutline = ErrorOutline
 
 export const Menu = (props) => <MaterialIcon name="menu" size={30} color="#000000" style={props.style} />

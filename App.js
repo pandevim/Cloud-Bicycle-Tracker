@@ -28,19 +28,27 @@ const AppProvider = (props) => {
 
   const [permissions, setPermissions] = useState(null)
   const [initializingFirebase, setInitializingFirebase] = useState(true)
-  const [userInfo, setUserInfo] = useState({})
   const [userState, setUserState] = useState(null)
   const [contacts, setContacts] = useState(null)
+  const [journey, setJourney] = useState(false)
+
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    sex: "",
+    email: "",
+    age: "",
+    height: "",
+    weight: ""
+  })
 
   const [current, setCurrent] = useState({
-    location: "Text Location",
+    location: "",
     street: "Loading...",
     latitude: 0.00,
     longitude: 0.00
   })
 
   const [metrics, setMetrics] = useState({
-    elapsedTime: "00:00:00",
     avgSpeed: "0",
     distance: "0",
     maxSpeed: "0",
@@ -49,6 +57,7 @@ const AppProvider = (props) => {
 
   PermissionsAndroid.requestMultiple([
     PermissionsAndroid.PERMISSIONS.SEND_SMS,
+    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
   ])
   .then( granted => setPermissions(granted))
@@ -63,8 +72,12 @@ const AppProvider = (props) => {
     }
   }
 
-  const updateUserInfo = data => {
-    setUserInfo(data)
+  const resetDataLocally = async () => {
+    try {
+      await AsyncStorage.setItem('@user_info', "")
+    } catch (e) {
+      console.error(`resetDataLocally: ${e}`)
+    }
   }
 
   const updateContacts = contacts => {
@@ -84,6 +97,10 @@ const AppProvider = (props) => {
     return subscriber
   }, [])
 
+  useEffect(() => {
+    const i = getUserInfo()
+    console.log(`getUserInfo: ${JSON.stringify(i)}`)
+  }, [getUserInfo])
   const getUserInfo = useCallback(async () => {
     try {
       const data = await AsyncStorage.getItem('@user_info')
@@ -91,6 +108,10 @@ const AppProvider = (props) => {
     } catch(e) { console.error(e) }
   }, [])
 
+  useEffect(() => {
+    const c = getEmergencyContacts()
+    console.log(`getEmergencyContacts: ${JSON.stringify(c)}`)
+  }, [getEmergencyContacts])
   const getEmergencyContacts = useCallback(async () => {
     try {
       const data = await AsyncStorage.getItem('@emergency_contacts')
@@ -98,15 +119,10 @@ const AppProvider = (props) => {
     } catch(e) { console.error(e) }
   }, [])
 
-  useEffect(() => {
-    getUserInfo()
-    getEmergencyContacts()
-  }, [getUserInfo])
-
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
     if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
-    else if (!current) Alert.alert("ERROR", "GPS not working")
+    else if (!current.location) Alert.alert("ERROR", "GPS not working")
     else {
       console.log('contacts send!!')
       const helpTex = `!!!EMERGENCY SOS!!!\n${userInfo.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
@@ -117,28 +133,32 @@ const AppProvider = (props) => {
     }
   }
 
-  const toggleNavigation = () => {
-
-  }
+  const toggleNavigation = () => {}
 
   return (
     <AppContext.Provider 
       style={{ fontFamily: "Roboto"}}
       value={{ 
         permissions: permissions,
-        current: current,
         metrics: metrics,
-        userInfo: userInfo,
         initializingFirebase: initializingFirebase,
         userState: userState,
 
         updateContacts: updateContacts,
         sendEmergencySMS: sendEmergencySMS,
-        updateUserInfo: updateUserInfo,
         toggleNavigation: toggleNavigation,
 
+        storeDataLocally: storeDataLocally,
+        resetDataLocally: resetDataLocally,
+
+        userInfo: userInfo,
+        setUserInfo: setUserInfo,
+
         current: current,
-        setCurrent: setCurrent
+        setCurrent: setCurrent,
+
+        journey: journey,
+        setJourney: setJourney
       }}>
       {props.children}
     </AppContext.Provider>

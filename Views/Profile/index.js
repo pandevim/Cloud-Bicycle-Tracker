@@ -11,7 +11,7 @@ const Stack = createStackNavigator()
 
 const Profile = ({ navigation }) => {
 
-  const { initializingFirebase, userState, userInfo } = useContext(AppContext)
+  const { initializingFirebase, userState, userInfo, resetDataLocally } = useContext(AppContext)
 
   const [mets, setMets] = useState("6.8")
 
@@ -20,18 +20,9 @@ const Profile = ({ navigation }) => {
   const signOut = () => {
     auth()
       .signOut()
-      .then(() => {
-        resetDataLocally()
-        Alert.alert("Signed Out")
-      })
-  }
-
-  const resetDataLocally = async () => {
-    try {
-      await AsyncStorage.setItem('@user_info', {})
-    } catch (e) {
-      console.error(e)
-    }
+      .then(() => resetDataLocally())
+      .then(() => Alert.alert("Signed Out"))
+      .catch(err => console.error(`signOut: ${err}`))
   }
 
   return (
@@ -39,24 +30,16 @@ const Profile = ({ navigation }) => {
     { userState 
       ? <View style={styles.container}>
           <View style={styles.heading}>
-            <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{userState.email}</Text></Text>
+            <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{userInfo.name}</Text></Text>
           </View>
           <Button color="#1873FF" title="sign out" onPress={() => signOut()} />
           <ScrollView style={styles.form}>
-            <View style={styles.field}>
-              <Text style={styles.label}>Name</Text>
-              <TextInput
-                style={{...styles.input, borderColor: "#f2f2f2"}}
-                value={"value"}
-                editable={false}
-              />
-            </View>
             <View style={styles.field}>
               <Text style={styles.label}>Age</Text>
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={"value"}
+                  value={userInfo.age}
                   editable={false}
                 />
                 <TextInput defaultValue="yr" editable={false} />
@@ -64,20 +47,21 @@ const Profile = ({ navigation }) => {
             </View>
             <View style={styles.field}>
               <Text style={styles.label}>Sex</Text>
-              <Picker
-                selectedValue={"userSex"}
-                style={{height: 50}}
-                enabled={false}>
-                <Picker.Item label="Male" value="male" />
-                <Picker.Item label="Female" value="female" />
-              </Picker>
+              <View style={styles.specialInput}>
+                <TextInput
+                  style={{...styles.input, borderColor: "#f2f2f2"}}
+                  value={userInfo.sex}
+                  editable={false}
+                />
+                <TextInput defaultValue="yr" editable={false} />
+              </View>
             </View>
             <View style={styles.field}>
               <Text style={styles.label}>Height</Text>
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={"value"}
+                  value={userInfo.height}
                   editable={false}
                 />
                 <TextInput defaultValue="cm" editable={false} />
@@ -88,7 +72,7 @@ const Profile = ({ navigation }) => {
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={"value"}
+                  value={userInfo.weight}
                   editable={false}
                 />
                 <TextInput defaultValue="kg" editable={false} />

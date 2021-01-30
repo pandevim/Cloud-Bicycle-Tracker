@@ -83,7 +83,7 @@ EOF
 $ cd android && ./gradlew assembleRelease
 ```
 
-## Installation
+## Install on phone
 ```bash
 $ adb install -r Cloud/android/app/build/outputs/apk/release/app-release.apk
 ```

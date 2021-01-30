@@ -4,9 +4,7 @@ import AppContext from "context/app-context.js"
 import { Icon } from "constants"
 
 const Navigation = () => {
-  const { toggleNavigation } = useContext(AppContext)
-
-  const [journey, setJourney] = useState(false)
+  const { toggleNavigation, journey, setJourney } = useContext(AppContext)
 
   const [text, setText] = useState()
   const [txtColor, setTxtColor] = useState()

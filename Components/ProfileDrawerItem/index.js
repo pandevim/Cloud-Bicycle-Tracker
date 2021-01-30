@@ -7,7 +7,7 @@ const ProfileDrawerItem = () => {
   return (
   	<View style={styles.container}>
   		<View style={styles.profile}>
-  			<Icon.Person color={"#66717E"} size={60} />
+  			<Icon.Person color={"#1873FF"} size={60} />
   		</View>
   		<View style={styles.name}>
         <Text>Profile</Text>

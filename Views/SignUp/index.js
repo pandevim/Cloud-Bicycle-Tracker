@@ -11,15 +11,7 @@ import AppContext from "context/app-context.js"
 
 const SignUp = () => {
 
-  // const updateProfile = useCallback(async () => {
-  //   await firebase.auth().currentUser.updateProfile({displayName: 'Test User'})
-  // }, [])
-
-  // useEffect(() => {
-  //   updateProfile()
-  // }, [updateProfile])
-
-  const { updateUserInfo, storeDataLocally } = useContext(AppContext)
+  const {userInfo, setUserInfo, storeDataLocally} = useContext(AppContext)
 
   const nameRef = useRef()
   const emailRef = useRef()
@@ -31,37 +23,16 @@ const SignUp = () => {
   const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   const passwordPattern = /^[a-zA-Z0-9]{6,}$/
 
-  const [emailError, setEmailError] = useState("")
-  const [passwordError, setPasswordError] = useState("")
-
-  const [userSex, setUserSex] = useState("")
-
   const { control, handleSubmit, errors } = useForm()
   const onSubmit = data => signUp(data)
 
   const signUp = (data) => {
     auth()
       .createUserWithEmailAndPassword(data.email, data.password)
-      .then(response => {
-        console.log(response)
-        updateUserInfo(data)
-        storeDataLocally(data, '@user_info')
-      })
-      .catch(error => {
-        console.error(error)
-        Alert.alert("Error", error.code)
-      })
+      .then(res => setUserInfo(data))
+      .then(res => storeDataLocally(data, '@user_info'))
+      .catch(err => Alert.alert("Error", JSON.strigify(err)))
   }
-
-  useEffect(() => {
-    if ( errors.email && errors.email.type === "pattern" ) setEmailError("Invalid Email")
-    else if ( errors.email && errors.email.type === "required" ) setEmailError("This filed is required.")
-    else setEmailError("")
-
-    if ( errors.password && errors.password.type === "pattern" ) setPasswordError("Password should be at least 6 characters.")
-    else if ( errors.password && errors.password.type === "required" ) setPasswordError("This filed is required.")
-    else setPasswordError("")
-  }, [errors])
 
   return (
     <View style={styles.container}>
@@ -109,7 +80,7 @@ const SignUp = () => {
               />
             )}
           />
-          <Text style={styles.error}>{emailError}</Text>
+          {errors.email && <Text style={styles.error}>Invalid Email.</Text>}
         </View>
         <View style={styles.field}>
           <Text style={styles.label}>Password</Text>
@@ -130,7 +101,7 @@ const SignUp = () => {
               />
             )}
           />
-          <Text style={styles.error}>{passwordError}</Text>
+          {errors.password && <Text style={styles.error}>Password should be at least 6 characters.</Text>}
         </View>
         <View style={styles.field}>
           <Text style={styles.label}>Age</Text>
@@ -159,9 +130,9 @@ const SignUp = () => {
         <View style={styles.field}>
           <Text style={styles.label}>Sex</Text>
           <Picker
-            selectedValue={userSex}
+            selectedValue={userInfo.sex}
             style={{height: 50}}
-            onValueChange={value => setUserSex(value)}>
+            onValueChange={value => setUserInfo({...userInfo, sex: value})}>
             <Picker.Item label="Male" value="male" />
             <Picker.Item label="Female" value="female" />
           </Picker>

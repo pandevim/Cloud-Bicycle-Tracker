@@ -1,8 +1,9 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import axios from 'axios'
 import MapboxGL, { MapView, UserLocation, Camera } from '@react-native-mapbox-gl/maps'
 import AppContext from "context/app-context.js"
+import { limit } from "utils"
 
 import { MAPBOX_API_TOKEN } from "@env"
 const ROOT_URL = "https://api.mapbox.com/geocoding/v5"
@@ -11,6 +12,7 @@ const SEARCH_ENDPOINT = "mapbox.places"
 const Maps = ({ navigation }) => {
 
   const { permissions, current, setCurrent } = useContext(AppContext)
+  const [movement, setMovement] = useState(false)
 
   useEffect(() => {
     MapboxGL.setAccessToken(`${MAPBOX_API_TOKEN}`)
@@ -25,10 +27,10 @@ const Maps = ({ navigation }) => {
   }, [current])
 
   const updateCoords = coords => {
-    setCurrent({
-      ...current,    
-      latitude: coords.latitude,
-      longitude: coords.longitude
+    console.log('real update')
+    limit(10, execute => {
+      console.log('ager limit')
+      setCurrent({...current, latitude: coords.latitude, longitude: coords.longitude})
     })
   }
 
@@ -38,13 +40,16 @@ const Maps = ({ navigation }) => {
       	style={{flex: 1}}
       	styleURL={MapboxGL.StyleURL.Streets}
       	localizeLabels={true}>
-      	<UserLocation
-      		minDisplacement={1}
-          onUpdate={({coords}) => updateCoords(coords)} />
+      	{permissions && 
+          <UserLocation
+            showsUserHeadingIndicator={true}
+        		minDisplacement={5}
+            onUpdate={({coords}) => updateCoords(coords)} />
+        }
     		<Camera
     			followUserLocation={true}
     			followUserMode={MapboxGL.UserTrackingModes.FollowWithCourse}
-    			zoomLevel={18} />
+    			zoomLevel={19} />
       </MapView>
     </View>
 	)
