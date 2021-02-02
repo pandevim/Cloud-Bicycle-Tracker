@@ -135,7 +135,6 @@ const AppProvider = (props) => {
       .send(message, user.contacts)
       .then(result => Alert.alert(`Emergency Alert`, result))
       .catch(err => Alert.alert("ERROR", err))
-    }
   }
 
   /* return a provider with all the state and methods above */
