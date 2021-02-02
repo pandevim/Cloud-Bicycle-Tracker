@@ -1,7 +1,7 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React from "react"
+import { Text, View } from "react-native"
 
-import VolumeControl, { VolumeControlEvents } from 'react-native-volume-control'
+import VolumeControl, { VolumeControlEvents } from "react-native-volume-control"
 
 const VolumeButtonDown = () => {
   // const volumeListener = VolumeControlEvents.addListener("VolumeChanged", event => {

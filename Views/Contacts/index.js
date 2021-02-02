@@ -1,42 +1,25 @@
-import React, { useContext, useRef } from 'react'
-import { 
-	Text, 
-	View, 
-	StyleSheet,
-	TouchableOpacity,
-	ScrollView,
-	TextInput,
-	Button
-} from 'react-native'
-
-import { useForm, Controller } from "react-hook-form"
-
 import AppContext from "context/app-context.js"
+
+import React, { useContext, useRef } from 'react'
+import { Text, View, StyleSheet, ScrollView, TextInput, Button } from 'react-native'
+import { useForm, Controller } from "react-hook-form"
 
 const Contacts = () => {
 
-  const name1Ref = useRef()
-  const number1Ref = useRef()
+  const nameRef = useRef()
+  const numberRef = useRef()
   const { control, handleSubmit, errors } = useForm()
+  const { user, updateContacts } = useContext(AppContext)
 
-  const { updateContacts } = useContext(AppContext)
   const onSubmit = (data) => {
-  	const contact1 = {
-			id: "1",
-			name: data.name1,
-			number: data.number1  		
-  	}
-  	const contact2 = {
-			id: "2",
-			name: data.name2,
-			number: data.number2  		
-  	}
+  	const contact1 = { id: "1", name: data.name1, number: data.number1 }
+  	const contact2 = { id: "2", name: data.name2, number: data.number2 }
 
-  	if ( data.name2 && data.number2 )
-	  	updateContacts([contact1, contact2])
-  	else
-	  	updateContacts([contact1])
+  	const contacts = (data.name2 && data.number2)
+  		? [contact1, contact2]
+  		: [contact1]
 
+  	updateContacts(contacts)
   }
 
   return (
@@ -48,9 +31,9 @@ const Contacts = () => {
 	          <Text style={styles.label}>Name</Text>
 	          <Controller
 	            name="name1"
-	            defaultValue=""
+	            defaultValue={user.contacts[0].name}
 	            rules={{ required: true }}
-	            onFocus={() => name1Ref.current.focus()}
+	            onFocus={() => nameRef.current.focus()}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput
@@ -59,7 +42,7 @@ const Contacts = () => {
 	                onBlur={onBlur}
 	                onChangeText={value => onChange(value)}
 	                value={value}
-	                ref={name1Ref}
+	                ref={nameRef}
 	              />
 	            )}
 	          />
@@ -69,9 +52,9 @@ const Contacts = () => {
 	          <Text style={styles.label}>Number</Text>
 	          <Controller
 	            name="number1"
-	            defaultValue=""
+	            defaultValue={user.contacts[0].number}
 	            rules={{ required: true }}
-	            onFocus={() => number1Ref.current.focus()}
+	            onFocus={() => numberRef.current.focus()}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput
@@ -80,7 +63,7 @@ const Contacts = () => {
 	                onBlur={onBlur}
 	                onChangeText={value => onChange(value)}
 	                value={value}
-	                ref={number1Ref}
+	                ref={numberRef}
 	              />
 	            )}
 	          />
@@ -93,7 +76,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Name</Text>
 	          <Controller
 	            name="name2"
-	            defaultValue=""
+	            defaultValue={user.contacts[1].name}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput
@@ -110,7 +93,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Number</Text>
 	          <Controller
 	            name="number2"
-	            defaultValue=""
+	            defaultValue={user.contacts[1].number}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput

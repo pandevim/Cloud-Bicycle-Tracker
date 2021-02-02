@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "815256397153",
+    "firebase_url": "https://cloud-cd27b-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "cloud-cd27b",
     "storage_bucket": "cloud-cd27b.appspot.com"
   },

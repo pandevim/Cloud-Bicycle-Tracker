@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
+
 import { Icon } from "constants"
 
 const ProfileDrawerItem = () => {

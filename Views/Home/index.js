@@ -1,15 +1,18 @@
-import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import React, { useState } from "react"
+import { Text, View, StyleSheet } from "react-native"
 
 import { EmergencySlider, Location, Metrics, Navigation } from "Components"
 import { Maps } from "Views"
 
 const Home = () => {
+  const [path, setPath] = useState([])
+  const [speed, setSpeed] = useState(0)
+
   return (
   	<View style={styles.container}>
-      <Maps />
+      <Maps state={{ data: [setPath, setSpeed] }} />
       <View style={styles.main}>
-        <Metrics />
+        <Metrics state={{ data: [path, speed] }} />
         <View style={styles.info}>
           <View style={styles.navigation}>
             <Location />

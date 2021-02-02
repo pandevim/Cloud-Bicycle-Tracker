@@ -1,7 +1,10 @@
-import React, { useContext } from 'react'
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
-import Slider from 'react-native-unlock-slider'
 import AppContext from "context/app-context.js"
+
+import React, { useContext } from "react"
+import { Text, View, StyleSheet } from "react-native"
+
+import Slider from 'react-native-unlock-slider'
+
 import { Icon } from "constants"
 
 const EmergencySlider = () => {

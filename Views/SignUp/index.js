@@ -1,17 +1,16 @@
-import React, { useState, useContext, useRef, useEffect, useCallback } from 'react'
-import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert } from 'react-native'
-
-import { Picker } from '@react-native-picker/picker'
-
-import auth from '@react-native-firebase/auth'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useForm, Controller } from "react-hook-form"
-
 import AppContext from "context/app-context.js"
+
+import React, { useState, useContext, useRef, useEffect, useCallback } from "react"
+import { Text, View, TextInput, StyleSheet, Button, ScrollView, Alert } from "react-native"
+
+import { Picker, useForm, Controller } from "Components"
+
+import { PATTERN } from "constants"
+import { auth, localStorage} from "utils"
 
 const SignUp = () => {
 
-  const {userInfo, setUserInfo, storeDataLocally} = useContext(AppContext)
+  const { user, setUser } = useContext(AppContext)
 
   const nameRef = useRef()
   const emailRef = useRef()
@@ -20,17 +19,12 @@ const SignUp = () => {
   const heightRef = useRef()
   const weightRef = useRef()
 
-  const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  const passwordPattern = /^[a-zA-Z0-9]{6,}$/
-
   const { control, handleSubmit, errors } = useForm()
-  const onSubmit = data => signUp(data)
 
   const signUp = (data) => {
     auth()
       .createUserWithEmailAndPassword(data.email, data.password)
-      .then(res => setUserInfo(data))
-      .then(res => storeDataLocally(data, '@user_info'))
+      .then(res => setUser(data, res))
       .catch(err => Alert.alert("Error", JSON.strigify(err)))
   }
 
@@ -66,7 +60,7 @@ const SignUp = () => {
           <Controller
             name="email"
             defaultValue=""
-            rules={{ required: true, pattern: emailPattern }}
+            rules={{ required: true, pattern: PATTERN.email }}
             onFocus={() => emailRef.current.focus()}
             control={control}
             render={({ onChange, onBlur, value }) => (
@@ -87,7 +81,7 @@ const SignUp = () => {
           <Controller
             name="password"
             defaultValue=""
-            rules={{ required: true, pattern: passwordPattern }}
+            rules={{ required: true, pattern: PATTERN.password }}
             onFocus={() => passwordRef.current.focus()}
             control={control}
             render={({ onChange, onBlur, value }) => (
@@ -186,7 +180,7 @@ const SignUp = () => {
           {errors.weight && <Text style={styles.error}>This field is required.</Text>}
         </View>        
       </ScrollView>
-      <Button color="#1873FF" title="sign up" onPress={handleSubmit(onSubmit)} />
+      <Button color="#1873FF" title="sign up" onPress={handleSubmit(signUp)} />
     </View>
   )
 }
@@ -242,22 +236,3 @@ const styles = StyleSheet.create({
 })
 
 export default SignUp	
-
-/*
-https://keisan.casio.com/exec/system/1350958587
-Unit: SI(cm;kg)
-
-Email
-Password
-Confirm Password
-Name
-
-Age (years)
-Sex (male|female)
-Height (cm)
-Weight (kg)
-Bicycling Speed (km/h)
-Mets: https://download.lww.com/wolterskluwer_vitalstream_com/permalink/mss/a/mss_43_8_2011_06_13_ainsworth_202093_sdc1.pdf
-Duration (mins)
-
-*/

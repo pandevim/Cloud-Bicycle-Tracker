@@ -1,20 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
-import axios from 'axios'
-import MapboxGL, { MapView, UserLocation, Camera } from '@react-native-mapbox-gl/maps'
 import AppContext from "context/app-context.js"
-import { limit } from "utils"
+
+import React, { useState, useEffect, useContext } from "react"
+import { Text, View, StyleSheet } from "react-native"
+import MapboxGL, { MapView, UserLocation, Camera } from "@react-native-mapbox-gl/maps"
+
+import { limit, axios } from "utils"
 
 import { MAPBOX_API_TOKEN } from "@env"
 const ROOT_URL = "https://api.mapbox.com/geocoding/v5"
 const SEARCH_ENDPOINT = "mapbox.places"
 
-const Maps = ({ navigation }) => {
+const Maps = (props) => {
+  const {
+    data: [setPath, setSpeed]
+  } = {
+    data: useState(0),
+    ...(props.state || [])
+  }
 
-  const { 
-    permissions, 
-    current, setCurrent
-  } = useContext(AppContext)
+  const { permissions, current, setCurrent } = useContext(AppContext)
 
   const [movement, setMovement] = useState(false)
 
@@ -32,7 +36,9 @@ const Maps = ({ navigation }) => {
 
   const updateCoords = coords => {
     limit(10, execute => {
-      setCurrent({...current, latitude: coords.latitude, longitude: coords.longitude, speed: coords.speed})
+      setCurrent({...current, latitude: coords.latitude, longitude: coords.longitude})
+      setSpeed(coords.speed)
+      setPath(path => [...path, [coords.longitude, coords.latitude]])
     })
   }
 

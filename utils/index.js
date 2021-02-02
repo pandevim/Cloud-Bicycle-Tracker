@@ -1,25 +1,30 @@
+import limit from "./limit"
+import time from "./time"
 
-let events = 0
-const limit = (times, callback) => {
-	if (events == 0) {
-		events = 1
-		callback()
-	} else if (events >= times) {
-  	events = 0
-    callback()
-  } else {
-  	events++
-  }
+import sms from "./sms"
+import localStorage from "./localStorage"
+
+import auth from "@react-native-firebase/auth"
+import database from "@react-native-firebase/database"
+import axios from "axios"
+
+import length from '@turf/length'
+import { lineString, round } from '@turf/helpers'
+import cleanCoords from '@turf/clean-coords'
+
+export { 
+	limit, 
+	time,
+
+	sms,
+	localStorage,
+
+	database,
+	auth,
+	axios,
+
+	length,
+	lineString,
+	round,
+	cleanCoords
 }
-
-import moment from 'moment'
-const formatTime = (hours, minutes, seconds) => {
-  const time = moment.duration({seconds: seconds, minutes: minutes, hours: hours })
-  return moment.utc(time.asMilliseconds()).format("HH:mm:ss")
-}
-
-const round = (num) => {
-	return Math.round((num + Number.EPSILON) * 100) / 100
-}
-
-export { limit, formatTime, round }

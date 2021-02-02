@@ -1,158 +1,154 @@
+import AppContext from "context/app-context.js"
+
 import React, { useState, useEffect, useCallback } from "react"
-import {
-  StyleSheet,
-  StatusBar,
-  PermissionsAndroid,
-  Alert,
-  Vibration,
-  TouchableOpacity,
-  Text,
-  View
-} from "react-native"
-
-import auth from '@react-native-firebase/auth'
-
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-import SendSMS from 'react-native-sms-x'
+import { PermissionsAndroid, Alert, Vibration, StatusBar, StyleSheet } from "react-native"
+import { NavigationContainer } from "@react-navigation/native"
+import { createDrawerNavigator } from "@react-navigation/drawer"
 
 import { EmergencyVolume, ProfileDrawerItem } from "Components"
 import { Home, Profile, Settings, Contacts, History } from "Views"
 
-import { NavigationContainer } from '@react-navigation/native'
-import { createDrawerNavigator } from '@react-navigation/drawer'
-
-import AppContext from "context/app-context.js"
+import { sms, database, auth, localStorage } from "utils"
 
 const AppProvider = (props) => {
 
+  /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ States ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+
+  /* permissions for different services */
   const [permissions, setPermissions] = useState(null)
+
+  /* have a check on firebase initlization */
   const [initializingFirebase, setInitializingFirebase] = useState(true)
-  const [userState, setUserState] = useState(null)
-  const [contacts, setContacts] = useState(null)
+
+  /* check if the navigation button is pressed or not */
   const [journey, setJourney] = useState(false)
 
-  const [userInfo, setUserInfo] = useState({
+  /* Information regarding current user*/
+  const [user, setUser] = useState({
+    uid: "",
     name: "",
     sex: "",
     email: "",
-    age: "",
-    height: "",
-    weight: ""
-  })
+    age: "0",
+    height: "0",
+    weight: "0",
+    mets: "0",
+    history: [],
+    contacts: []
+  })  
 
+  /* current map data */
   const [current, setCurrent] = useState({
     location: "",
     street: "Loading...",
-    latitude: 0.00,
-    longitude: 0.00,
-    speed: 0.00
+    latitude: 0,
+    longitude: 0
   })
 
-  const [metrics, setMetrics] = useState({
-    distance: "0",
-    calories: "0"
-  })
+  /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Effects ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
-  PermissionsAndroid.requestMultiple([
-    PermissionsAndroid.PERMISSIONS.SEND_SMS,
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-  ])
-  .then( granted => setPermissions(granted))
-  .catch( err => console.warn(err) )
+  /* ask for pemissions the first time app is installed */
+  useEffect(() => {
+    PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.SEND_SMS,
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    ])
+    .then( result => setPermissions(result))
+    .catch( err => console.warn(err) )
+  }, [])
 
-  const storeDataLocally = async (value, key) => {
-    try {
-      const data = JSON.stringify(value)
-      await AsyncStorage.setItem(key, data)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const resetDataLocally = async () => {
-    try {
-      await AsyncStorage.setItem('@user_info', "")
-    } catch (e) {
-      console.error(`resetDataLocally: ${e}`)
-    }
-  }
-
-  const updateContacts = contacts => {
-    console.log('updateContacts', contacts)
-    setContacts(contacts)
-    Alert.alert("SUCCESS", "Contacts saved.")
-    storeDataLocally(contacts, '@emergency_contacts')
-  }
-
-  const onAuthStateChanged = user => {
-    setUserState(user)
-    setInitializingFirebase(false)
-  }
-
+  /* call onAuthStateChanged on every auth state change */
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
     return subscriber
   }, [])
 
+  /* get user saved locally when app starts */
   useEffect(() => {
-    const i = getUserInfo()
-    console.log(`getUserInfo: ${JSON.stringify(i)}`)
-  }, [getUserInfo])
-  const getUserInfo = useCallback(async () => {
-    try {
-      const data = await AsyncStorage.getItem('@user_info')
-      return data != null ? JSON.parse(data) : null
-    } catch(e) { console.error(e) }
+      // .set('@user', {
+      //   uid: "8Iyt993fB1MnBc91HLJzOd7yiwF3",
+      //   name: "Aniruddha Pandey",
+      //   sex: "Male",
+      //   email: "anirudh.pandev@gmail.com",
+      //   age: "22",
+      //   height: "180",
+      //   weight: "62",
+      //   mets: "6.8",
+      //   history: [],
+      //   contacts: [{ id: "1", name: "Mummy", number: "+919752263660" }]
+      // })
+    localStorage
+      .get('@user')
+      .then(user => user && setUser(user))
+      .catch(err => Alert.alert("ERROR", err))
   }, [])
 
-  useEffect(() => {
-    const c = getEmergencyContacts()
-    console.log(`getEmergencyContacts: ${JSON.stringify(c)}`)
-  }, [getEmergencyContacts])
-  const getEmergencyContacts = useCallback(async () => {
-    try {
-      const data = await AsyncStorage.getItem('@emergency_contacts')
-      return data != null ? JSON.parse(data) : null
-    } catch(e) { console.error(e) }
-  }, [])
+  /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Methods ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
+  /* save user data locally */
+  const updateContacts = (contacts) => {
+    const data = {...user, contacts: contacts}
+    setUser(data)
+    localStorage.set('@user', data)
+  }
+
+  /* user auth state (signin, signup, signout) toggle */
+  const onAuthStateChanged = user => {
+    /* comment out user object here */
+    // {
+    //   "uid":"8Iyt993fB1MnBc91HLJzOd7yiwF3",
+    //   "metadata":{
+    //     "creationTime":1611798642946,
+    //     "lastSignInTime":1612111033480
+    //   },
+    //   "providerId":"firebase",
+    //   "photoURL":null,
+    //   "emailVerified":false,
+    //   "providerData":[
+    //     {
+    //       "uid":"anirudh.pandev@gmail.com",
+    //       "displayName":null,
+    //       "phoneNumber":null,
+    //       "photoURL":null,
+    //       "providerId":"password",
+    //       "email":"anirudh.pandev@gmail.com"
+    //     }
+    //   ],
+    //   "email":"anirudh.pandev@gmail.com",
+    //   "isAnonymous":false,
+    //   "displayName":null,
+    //   "phoneNumber":null
+    // }
+
+    /* runs only once the app opens */
+    setInitializingFirebase(false)
+  }
+
+  /* vibrate and send sms */
   const sendEmergencySMS = () => {
     Vibration.vibrate(1000)
-    if (!contacts) Alert.alert("ERROR", "Contacts not saved.")
-    else {
-      console.log('contacts send!!')
-      const helpTex = `!!!EMERGENCY SOS!!!\n${userInfo.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
-      const messageSent = contacts.map(contact => {
-        SendSMS.send(parseFloat(contact.id), contact.number, helpTex, successId => console.log(successId))
-      })
-      Alert.alert(`Emergency Alert`, `Message sent successfully to ${contacts.map(contact => contact.name).toString()} from your emergency contacts.`)
+    const message = `!!!EMERGENCY SOS!!!\n${user.name} has made an Emergency Trigger from \"${current.location}\" Approximate Location.\nhttps://www.google.com/maps/@${current.latitude},${current.longitude},15z`
+    sms
+      .send(message, user.contacts)
+      .then(result => Alert.alert(`Emergency Alert`, result))
+      .catch(err => Alert.alert("ERROR", err))
     }
   }
 
-  const toggleNavigation = () => {}
-
+  /* return a provider with all the state and methods above */
   return (
     <AppContext.Provider 
-      style={{ fontFamily: "Roboto"}}
+      style={styles.container}
       value={{ 
         permissions: permissions,
         initializingFirebase: initializingFirebase,
-        userState: userState,
-
-        updateContacts: updateContacts,
         sendEmergencySMS: sendEmergencySMS,
-        toggleNavigation: toggleNavigation,
 
-        storeDataLocally: storeDataLocally,
-        resetDataLocally: resetDataLocally,
-        
-        metrics: metrics,
-        setMetrics: setMetrics,
-
-        userInfo: userInfo,
-        setUserInfo: setUserInfo,
+        user: user,
+        setUser: setUser,
 
         current: current,
         setCurrent: setCurrent,
@@ -176,10 +172,10 @@ const App: () => React$Node = () => {
         <EmergencyVolume />
         <Drawer.Navigator initialRouteName="Home" drawerType="slide" screenOptions={{ headerShown: true }}>
           <Drawer.Screen name="Profile" component={Profile} options={{ drawerLabel: props => (<ProfileDrawerItem {...props} />)}} />
-          <Drawer.Screen name="Home" component={Home} />
-          <Drawer.Screen name="Contacts" component={Contacts} />
-          <Drawer.Screen name="History" component={History} />
-          <Drawer.Screen name="Settings" component={Settings} />
+          {/* <Drawer.Screen name="Home" component={Home} /> */}
+          {/* <Drawer.Screen name="Contacts" component={Contacts} /> */}
+          {/* <Drawer.Screen name="History" component={History} /> */}
+          {/* <Drawer.Screen name="Settings" component={Settings} /> */}
         </Drawer.Navigator>
       </AppProvider>
     </NavigationContainer>
@@ -187,7 +183,9 @@ const App: () => React$Node = () => {
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    fontFamily: "Roboto"
+  }
 })
 
 export default App

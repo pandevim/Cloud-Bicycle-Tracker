@@ -1,6 +1,8 @@
-import React, { useContext } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
 import AppContext from "context/app-context.js"
+
+import React, { useContext } from "react"
+import { Text, View, StyleSheet } from "react-native"
+
 import { round } from "utils"
 
 const Location = () => {

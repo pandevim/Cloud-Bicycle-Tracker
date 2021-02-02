@@ -1,7 +1,8 @@
+// Cloud/android/app/src/main/assets/fonts
+
 import React from 'react'
 import { Image } from 'react-native'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 export const Icon = () => <></>
@@ -14,9 +15,6 @@ Icon.Speed = Speed
 
 export const ErrorOutline = (props) => <MaterialIcon name="error-outline" size={props.size} color="white" style={props.style} />
 Icon.ErrorOutline = ErrorOutline
-
-export const Menu = (props) => <MaterialIcon name="menu" size={30} color="#000000" style={props.style} />
-Icon.Menu = Menu
 
 export const Time = (props) => <MaterialIcon name="access-time" size={30} color="#000000" style={props.style} />
 Icon.Time = Time

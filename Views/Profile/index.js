@@ -1,36 +1,42 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, Button, StyleSheet, ScrollView, TextInput, Alert } from 'react-native'
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack'
-import auth from '@react-native-firebase/auth'
-import { Details, SignIn, SignUp } from "Views"
 import AppContext from "context/app-context.js"
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Picker } from '@react-native-picker/picker'
+
+import React, { useState, useContext, useEffect } from "react"
+import { Text, View, Button, StyleSheet, ScrollView, TextInput, Alert } from "react-native"
+import { createStackNavigator } from "@react-navigation/stack"
+
+import { Picker } from "Components"
+import { Details, SignIn, SignUp } from "Views"
+
+import { auth, localStorage } from "utils"
 
 const Stack = createStackNavigator()
 
-const Profile = ({ navigation }) => {
+const Profile = () => {
 
-  const { initializingFirebase, userState, userInfo, resetDataLocally } = useContext(AppContext)
+  const { initializingFirebase, user, setUser } = useContext(AppContext)
 
-  const [mets, setMets] = useState("6.8")
+  const [mets, setMets] = useState(user.mets)
+
+  useEffect(() => {
+    setUser({...user, mets: mets})
+  }, [setMets])
 
   if (initializingFirebase) return null
 
   const signOut = () => {
     auth()
       .signOut()
-      .then(() => resetDataLocally())
+      .then(res => localStorage.delete('@user'))
       .then(() => Alert.alert("Signed Out"))
-      .catch(err => console.error(`signOut: ${err}`))
+      .catch(err => Alert.alert("ERROR", err))
   }
 
   return (
     <>
-    { userState 
+    { user.uid 
       ? <View style={styles.container}>
           <View style={styles.heading}>
-            <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{userInfo.name}</Text></Text>
+            <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{user.name}</Text></Text>
           </View>
           <Button color="#1873FF" title="sign out" onPress={() => signOut()} />
           <ScrollView style={styles.form}>
@@ -39,7 +45,7 @@ const Profile = ({ navigation }) => {
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={userInfo.age}
+                  value={user.age}
                   editable={false}
                 />
                 <TextInput defaultValue="yr" editable={false} />
@@ -50,7 +56,7 @@ const Profile = ({ navigation }) => {
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={userInfo.sex}
+                  value={user.sex}
                   editable={false}
                 />
                 <TextInput defaultValue="yr" editable={false} />
@@ -61,7 +67,7 @@ const Profile = ({ navigation }) => {
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={userInfo.height}
+                  value={user.height}
                   editable={false}
                 />
                 <TextInput defaultValue="cm" editable={false} />
@@ -72,7 +78,7 @@ const Profile = ({ navigation }) => {
               <View style={styles.specialInput}>
                 <TextInput
                   style={{...styles.input, borderColor: "#f2f2f2"}}
-                  value={userInfo.weight}
+                  value={user.weight}
                   editable={false}
                 />
                 <TextInput defaultValue="kg" editable={false} />
@@ -81,7 +87,7 @@ const Profile = ({ navigation }) => {
             <View style={{...styles.field, paddingBottom: 50}}>
               <Text style={styles.label}>Mets</Text>
               <Picker
-                selectedValue={"6.8"}
+                selectedValue={mets}
                 style={{height: 50}}
                 onValueChange={value => setMets(value)}>
                 <Picker.Item label="bicycling, general" value="7.5" />

@@ -1,27 +1,50 @@
-import React, { useState, useContext, useRef, useEffect } from 'react'
-import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert } from 'react-native'
-
-import { useForm, Controller } from "react-hook-form"
-import auth from '@react-native-firebase/auth'
-
 import AppContext from "context/app-context.js"
+
+import React, { useState, useRef, useEffect } from "react"
+import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert } from "react-native"
+
+import { useForm, Controller } from "Components"
+
+import { PATTERN } from "constants"
+import { auth, localStorage, database } from "utils"
 
 const SignIn = ({ navigation }) => {
 
   const emailRef = useRef()
   const passwordRef = useRef()
 
-  const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  const passwordPattern = /.*/
-  // const passwordPattern = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-
-  const [emailError, setEmailError] = useState("")
-  const [passowordError, setPassowordError] = useState("")
-
   const { control, handleSubmit, errors } = useForm()
-  const onSubmit = ({ email, password }) => signIn(email, password)
 
-  const signIn = (email, password) => {
+  const signIn = ({email, password}) => {
+    // {
+    //   "additionalUserInfo":{
+    //     "isNewUser":false
+    //   },
+    //   "user":{
+    //     "phoneNumber":null,
+    //     "displayName":null,
+    //     "isAnonymous":false,
+    //     "email":"anirudh.pandev@gmail.com",
+    //     "providerData":[
+    //       {
+    //         "email":"anirudh.pandev@gmail.com",
+    //         "providerId":"password",
+    //         "photoURL":null,
+    //         "phoneNumber":null,
+    //         "displayName":null,
+    //         "uid":"anirudh.pandev@gmail.com"
+    //       }
+    //     ],
+    //     "emailVerified":false,
+    //     "photoURL":null,
+    //     "providerId":"firebase",
+    //     "metadata":{
+    //       "lastSignInTime":1612111033480,
+    //       "creationTime":1611798642946
+    //     },
+    //     "uid":"8Iyt993fB1MnBc91HLJzOd7yiwF3"
+    //   }
+    // }    
     auth()
       .signInWithEmailAndPassword(email, password)
       .then((response) => {
@@ -32,23 +55,6 @@ const SignIn = ({ navigation }) => {
         Alert.alert("Error", error.code)
       })
   }
-
-  useEffect(() => {
-    if ( errors.email && errors.email.type === "pattern" ) setEmailError("Invalid Email")
-    else if ( errors.email && errors.email.type === "required" ) setEmailError("This filed is required.")
-    else setEmailError("")
-
-    if ( errors.password && errors.password.type === "pattern" ) setPassowordError("Invalid Password")
-    else if ( errors.password && errors.password.type === "required" ) setPassowordError("This filed is required.")
-    else setPassowordError("")
-
-    // Password must be:
-    // 1. At least one upper case English letter
-    // 2. At least one lower case English letter
-    // 3. At least one digit
-    // 4. At least one special character
-    // 5. Minimum eight in length
-  }, [errors])
 
   return (
     <View style={styles.container}>
@@ -61,7 +67,7 @@ const SignIn = ({ navigation }) => {
           <Controller
             name="email"
             defaultValue=""
-            rules={{ required: true, pattern: emailPattern }}
+            rules={{ required: true, pattern: PATTERN.email }}
             onFocus={() => emailRef.current.focus()}
             control={control}
             render={({ onChange, onBlur, value }) => (
@@ -75,14 +81,14 @@ const SignIn = ({ navigation }) => {
               />
             )}
           />
-          <Text style={styles.error}>{emailError}</Text>
+          {errors.email && <Text style={styles.error}>Invalid Email.</Text>}
         </View>
         <View style={styles.field}>
           <Text style={styles.label}>Password</Text>
           <Controller
             name="password"
             defaultValue=""
-            rules={{ required: true, pattern: passwordPattern }}
+            rules={{ required: true, pattern: PATTERN.password }}
             onFocus={() => passwordRef.current.focus()}
             control={control}
             render={({ onChange, onBlur, value }) => (
@@ -96,13 +102,13 @@ const SignIn = ({ navigation }) => {
               />
             )}
           />
-          <Text style={styles.error}>{passowordError}</Text>
+          {errors.password && <Text style={styles.error}>Invalid Password.</Text>}
         </View>
       </ScrollView>
       <TouchableOpacity style={styles.register} onPress={() => navigation.navigate('SignUp')}>
         <Text style={{color: "#9c9191", textDecorationLine: 'underline'}}>Register?</Text>
       </TouchableOpacity>
-      <Button color="#1873FF" title="sign in" onPress={handleSubmit(onSubmit)} />
+      <Button color="#1873FF" title="sign in" onPress={handleSubmit(signIn)} />
     </View>
   )
 }
