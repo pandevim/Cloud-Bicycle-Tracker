@@ -25,7 +25,9 @@ const Navigation = () => {
   return (
   	<TouchableOpacity onPress={toggle}>
 	    <View style={{...styles.container, backgroundColor: bgColor, borderColor: bdrColor}}>
-	    	{ journey ? <Icon.Check size={25} style={{ color: iconColor, paddingRight: 2}} /> : <Icon.Navigation size={25} style={{color: iconColor}} />}
+	    	{journey 
+          ? <Icon.Check size={25} style={{ color: iconColor, paddingRight: 2}} /> 
+          : <Icon.Navigation size={25} style={{color: iconColor}} />}
 	      <Text style={{...styles.title, color: txtColor}}>{text}</Text>
 	    </View>
   	</TouchableOpacity>

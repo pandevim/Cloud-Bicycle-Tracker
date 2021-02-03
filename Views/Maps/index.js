@@ -11,15 +11,9 @@ const ROOT_URL = "https://api.mapbox.com/geocoding/v5"
 const SEARCH_ENDPOINT = "mapbox.places"
 
 const Maps = (props) => {
-  const {
-    data: [setPath, setSpeed]
-  } = {
-    data: useState(0),
-    ...(props.state || [])
-  }
-
   const { permissions, current, setCurrent } = useContext(AppContext)
 
+  const { data: [setPath, setSpeed] } = { data: useState(0), ...(props.state || []) }
   const [movement, setMovement] = useState(false)
 
   useEffect(() => {
@@ -44,21 +38,21 @@ const Maps = (props) => {
 
 	return (
     <View style={styles.container}>
+  	{permissions && 
       <MapView
       	style={{flex: 1}}
       	styleURL={MapboxGL.StyleURL.Streets}
       	localizeLabels={true}>
-      	{permissions && 
           <UserLocation
             showsUserHeadingIndicator={true}
         		minDisplacement={5}
             onUpdate={({coords}) => updateCoords(coords)} />
-        }
     		<Camera
     			followUserLocation={true}
     			followUserMode={MapboxGL.UserTrackingModes.FollowWithCourse}
     			zoomLevel={19} />
       </MapView>
+    }
     </View>
 	)
 }

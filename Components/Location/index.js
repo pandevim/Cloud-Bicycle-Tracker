@@ -6,16 +6,15 @@ import { Text, View, StyleSheet } from "react-native"
 import { round } from "utils"
 
 const Location = () => {
-
   const { current } = useContext(AppContext)
 
   return (
     <View style={styles.container}>
-      <View style={styles.street}>
-      	<Text style={{fontWeight: 'bold', fontSize: 25}}>{ current.street }</Text>
+      <View>
+      	<Text style={styles.street}>{ current.street }</Text>
       </View>
-      <View style={styles.coordinates}>
-      	<Text style={{color: '#5E5F61', fontSize: 13}}>{round(current.latitude, 4)}° N, {round(current.longitude, 4)}° E</Text>
+      <View>
+      	<Text style={styles.coordinates}>{round(current.latitude, 4)}° N, {round(current.longitude, 4)}° E</Text>
       </View>
     </View>
   )
@@ -26,6 +25,14 @@ const styles = StyleSheet.create({
   	margin: 10,
   	paddingTop: 5,
   	paddingBottom: 5
+  },
+  street: {
+    fontWeight: 'bold',
+    fontSize: 25
+  },
+  coordinates: {
+    color: '#5E5F61',
+    fontSize: 13
   }
 })
 

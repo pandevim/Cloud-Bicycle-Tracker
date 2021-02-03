@@ -9,34 +9,33 @@ import { Icon } from "constants"
 import { time, length, cleanCoords, lineString } from "utils"
 
 const Metrics = (props) => {
-  const {
-    data: [path, speed]
-  } = {
-    data: useState(0),
-    ...(props.state || [])
-  }
+  const { journey, user } = useContext(AppContext)
 
-  const { journey, user: { weight, height, age, sex, mets } } = useContext(AppContext)
-  const { seconds, minutes, hours, start, pause, reset } = useStopwatch({ autoStart: false })
-
+  const {data: [path, speed]} = {data: useState(0), ...(props.state || [])}
   const[elapsedTime, setElapsedTime] = useState("00:00:00")
   const[maxSpeed, setMaxSpeed] = useState(0)
-
   const[bmr, setBmr] = useState(0)
   const[calories, setCalories] = useState(0)
   const[distance, setDistance] = useState(0)
 
+  const { weight } = parseFloat(user.weight)
+  const { height } = parseFloat(user.height)
+  const { age } = parseInt(user.age)
+  const { mets } = parseInt(user.mets)
+
+  const { seconds, minutes, hours, start, pause, reset } = useStopwatch({ autoStart: false })
+
   useEffect(() => {
-    setBmr((10*weight)+(6.25*height)-(5*age)+(sex == "Male")?(5):(-161))
-  }, [user])
+    setBmr((10*weight)+(6.25*height)-(5*age)+(user.sex == "Male")?(5):(-161))
+  }, [weight, height, age])
 
   useEffect(() => {
     setCalories((bmr*mets)/(24*time.toHour(elapsedTime)))
   }, [distance])
 
-  useEffect(() => {
-    setDistance(length(cleanCoords(lineString(path))))
-  }, [path])
+  // useEffect(() => {
+  //   setDistance(length(cleanCoords(lineString(path))))
+  // }, [path])
 
   useEffect(() => {
     setElapsedTime(time.toHourMinSec(hours, minutes, seconds))
@@ -46,7 +45,9 @@ const Metrics = (props) => {
     if (journey) {
       reset()
       start()
-    } else pause()
+    } else {
+      pause()
+    }
   }, [journey])
 
   useEffect(() => {
@@ -133,10 +134,3 @@ const styles = StyleSheet.create({
 })
 
 export default Metrics
-
-/*
-https://keisan.casio.com/exec/system/1350958587
-Unit: SI(cm;kg)
-The METS values are provided by "The Compendium of Physical Activities 2011"
-Mets: https://download.lww.com/wolterskluwer_vitalstream_com/permalink/mss/a/mss_43_8_2011_06_13_ainsworth_202093_sdc1.pdf
-*/

@@ -5,35 +5,44 @@ import { Text, View, Button, StyleSheet, ScrollView, TextInput, Alert } from "re
 import { createStackNavigator } from "@react-navigation/stack"
 
 import { Picker } from "Components"
-import { Details, SignIn, SignUp } from "Views"
+import { SignIn, SignUp } from "Views"
 
-import { auth, localStorage } from "utils"
+import { auth, localStorage, database } from "utils"
 
 const Stack = createStackNavigator()
 
 const Profile = () => {
+  const { initializingFirebase, user, setUser, journey } = useContext(AppContext)
 
-  const { initializingFirebase, user, setUser } = useContext(AppContext)
-
-  const [mets, setMets] = useState(user.mets)
+  const [mets, setMets] = useState("6.8")
+  const [signedIn, setSignedIn] = useState(true)
 
   useEffect(() => {
+    console.log('profile')
     setUser({...user, mets: mets})
-  }, [setMets])
-
-  if (initializingFirebase) return null
+    if ( user.uid && journey ) {
+      console.log('profile db')
+      database()
+        .ref(`/users/${user.uid}`)
+        .set({...user, mets: mets})
+        .catch(err => Alert.alert("ERROR", err))   
+    }
+  }, [mets])
 
   const signOut = () => {
+    console.log('signOut')
     auth()
       .signOut()
       .then(res => localStorage.delete('@user'))
-      .then(() => Alert.alert("Signed Out"))
+      .then(() => setSignedIn(false))
+      .then(() => Alert.alert("SUCCESS", "Signed Out Successfully!"))
       .catch(err => Alert.alert("ERROR", err))
   }
 
+  if (initializingFirebase) return null
   return (
     <>
-    { user.uid 
+    { user.uid && signedIn 
       ? <View style={styles.container}>
           <View style={styles.heading}>
             <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{user.name}</Text></Text>

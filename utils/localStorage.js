@@ -18,7 +18,7 @@ export default localStorage = {
 
   delete: (key) => {
     return AsyncStorage
-      .setItem(key, "{}")
+      .setItem(key, "")
       .catch(err => `(localStorage): ${err}`)
   }
 

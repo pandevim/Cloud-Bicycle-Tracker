@@ -60,3 +60,6 @@ buck-out/
 
 # Secret
 .env
+
+# Temporary files
+.tmp.js

@@ -1,16 +1,18 @@
 import AppContext from "context/app-context.js"
 
-import React, { useState, useContext, useRef, useEffect, useCallback } from "react"
+import React, { useState, useContext, useRef } from "react"
 import { Text, View, TextInput, StyleSheet, Button, ScrollView, Alert } from "react-native"
 
 import { Picker, useForm, Controller } from "Components"
 
 import { PATTERN } from "constants"
-import { auth, localStorage} from "utils"
+import { auth } from "utils"
 
 const SignUp = () => {
 
-  const { user, setUser } = useContext(AppContext)
+  const { updateUser } = useContext(AppContext)
+
+  const[sex, setSex] = useState("Male")
 
   const nameRef = useRef()
   const emailRef = useRef()
@@ -21,10 +23,10 @@ const SignUp = () => {
 
   const { control, handleSubmit, errors } = useForm()
 
-  const signUp = (data) => {
+  const signUp = data => {
     auth()
       .createUserWithEmailAndPassword(data.email, data.password)
-      .then(res => setUser(data, res))
+      .then(res => updateUser(res.user.uid, {...data, password: "", sex: sex}))
       .catch(err => Alert.alert("Error", JSON.strigify(err)))
   }
 
@@ -124,9 +126,9 @@ const SignUp = () => {
         <View style={styles.field}>
           <Text style={styles.label}>Sex</Text>
           <Picker
-            selectedValue={userInfo.sex}
+            selectedValue={sex}
             style={{height: 50}}
-            onValueChange={value => setUserInfo({...userInfo, sex: value})}>
+            onValueChange={value => setSex(value)}>
             <Picker.Item label="Male" value="male" />
             <Picker.Item label="Female" value="female" />
           </Picker>

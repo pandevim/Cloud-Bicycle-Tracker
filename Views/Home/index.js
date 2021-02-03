@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Text, View, StyleSheet } from "react-native"
+import { View, StyleSheet } from "react-native"
 
 import { EmergencySlider, Location, Metrics, Navigation } from "Components"
 import { Maps } from "Views"

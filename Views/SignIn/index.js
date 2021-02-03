@@ -1,59 +1,27 @@
 import AppContext from "context/app-context.js"
 
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useContext } from "react"
 import { Text, View, TextInput, StyleSheet, Button, ScrollView, TouchableOpacity, Alert } from "react-native"
 
 import { useForm, Controller } from "Components"
 
 import { PATTERN } from "constants"
-import { auth, localStorage, database } from "utils"
+import { auth } from "utils"
 
 const SignIn = ({ navigation }) => {
 
   const emailRef = useRef()
   const passwordRef = useRef()
 
+  const { updateUser } = useContext(AppContext)
+
   const { control, handleSubmit, errors } = useForm()
 
   const signIn = ({email, password}) => {
-    // {
-    //   "additionalUserInfo":{
-    //     "isNewUser":false
-    //   },
-    //   "user":{
-    //     "phoneNumber":null,
-    //     "displayName":null,
-    //     "isAnonymous":false,
-    //     "email":"anirudh.pandev@gmail.com",
-    //     "providerData":[
-    //       {
-    //         "email":"anirudh.pandev@gmail.com",
-    //         "providerId":"password",
-    //         "photoURL":null,
-    //         "phoneNumber":null,
-    //         "displayName":null,
-    //         "uid":"anirudh.pandev@gmail.com"
-    //       }
-    //     ],
-    //     "emailVerified":false,
-    //     "photoURL":null,
-    //     "providerId":"firebase",
-    //     "metadata":{
-    //       "lastSignInTime":1612111033480,
-    //       "creationTime":1611798642946
-    //     },
-    //     "uid":"8Iyt993fB1MnBc91HLJzOd7yiwF3"
-    //   }
-    // }    
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        console.log(response)
-      })
-      .catch(error => {
-        console.error(error)
-        Alert.alert("Error", error.code)
-      })
+      .then(data => updateUser(data.user.uid))
+      .catch(error => Alert.alert("Error", error.code))
   }
 
   return (

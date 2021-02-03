@@ -1,25 +1,52 @@
 import AppContext from "context/app-context.js"
 
-import React, { useContext, useRef } from 'react'
-import { Text, View, StyleSheet, ScrollView, TextInput, Button } from 'react-native'
+import React, { useState, useContext, useRef, useEffect } from 'react'
+import { Text, View, StyleSheet, ScrollView, TextInput, Button, Alert } from 'react-native'
 import { useForm, Controller } from "react-hook-form"
 
+import { database } from "utils"
+
 const Contacts = () => {
+  const { user, setUser } = useContext(AppContext)
 
   const nameRef = useRef()
   const numberRef = useRef()
+
   const { control, handleSubmit, errors } = useForm()
-  const { user, updateContacts } = useContext(AppContext)
 
-  const onSubmit = (data) => {
-  	const contact1 = { id: "1", name: data.name1, number: data.number1 }
-  	const contact2 = { id: "2", name: data.name2, number: data.number2 }
+  const[name1, setName1] = useState(user.contacts?user.contacts[0].name:"")
+  const[number1, setNumber1] = useState(user.contacts?user.contacts[0].number:"")
 
-  	const contacts = (data.name2 && data.number2)
-  		? [contact1, contact2]
-  		: [contact1]
+  const[name2, setName2] = useState(user.contacts?user.contacts[1].name:"")
+  const[number2, setNumber2] = useState(user.contacts?user.contacts[1].number:"")
 
-  	updateContacts(contacts)
+  useEffect(() => {
+    console.log(`contacts: ${JSON.stringify(user.contacts)}`)
+    setName1(user.contacts[0].name)
+    setNumber1(user.contacts[0].number)
+    setName2(user.contacts[1].name)
+    setNumber2(user.contacts[1].number)
+  }, [user])
+
+  const onSubmit = data => {
+    const contacts = [
+      { id: "1", name: data.name1, number: data.number1 },
+      { id: "2", name: data.name2, number: data.number2 }
+    ]
+
+		console.log('updateUser initiate', 'from onSubmit contacts')
+
+  	setUser({...user, contacts: contacts})
+
+  	if (user.uid) {
+  		const db_contacts = {0: contacts[0], 1: contacts[1]}
+	    database()
+	      .ref(`/users/${user.uid}`)
+	      .set({...user, contacts: db_contacts})
+	      .then(() => Alert.alert("SUCCESS", "Contacts Saved Successfully!"))
+	      .catch(err => Alert.alert("ERROR", err))  	
+  	}
+
   }
 
   return (
@@ -31,7 +58,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Name</Text>
 	          <Controller
 	            name="name1"
-	            defaultValue={user.contacts[0].name}
+	            defaultValue={name1}
 	            rules={{ required: true }}
 	            onFocus={() => nameRef.current.focus()}
 	            control={control}
@@ -52,7 +79,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Number</Text>
 	          <Controller
 	            name="number1"
-	            defaultValue={user.contacts[0].number}
+	            defaultValue={number1}
 	            rules={{ required: true }}
 	            onFocus={() => numberRef.current.focus()}
 	            control={control}
@@ -76,7 +103,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Name</Text>
 	          <Controller
 	            name="name2"
-	            defaultValue={user.contacts[1].name}
+	            defaultValue={name2}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput
@@ -93,7 +120,7 @@ const Contacts = () => {
 	          <Text style={styles.label}>Number</Text>
 	          <Controller
 	            name="number2"
-	            defaultValue={user.contacts[1].number}
+	            defaultValue={number2}
 	            control={control}
 	            render={({ onChange, onBlur, value }) => (
 	              <TextInput

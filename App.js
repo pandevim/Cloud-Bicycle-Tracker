@@ -26,15 +26,18 @@ const AppProvider = (props) => {
   /* Information regarding current user*/
   const [user, setUser] = useState({
     uid: "",
-    name: "",
+    weight: "0",
     sex: "",
+    mets: "0",
+    name: "",
+    history: "",
+    height: "0",
     email: "",
     age: "0",
-    height: "0",
-    weight: "0",
-    mets: "0",
-    history: [],
-    contacts: []
+    contacts: [
+      { id: "1", name: "", number: "" },
+      { id: "2", name: "", number: "" }
+    ]
   })  
 
   /* current map data */
@@ -66,64 +69,50 @@ const AppProvider = (props) => {
     return subscriber
   }, [])
 
+  useEffect(() => {
+    console.log(`change: ${JSON.stringify(user)}`)
+  }, [user])
+
   /* get user saved locally when app starts */
   useEffect(() => {
-      // .set('@user', {
-      //   uid: "8Iyt993fB1MnBc91HLJzOd7yiwF3",
-      //   name: "Aniruddha Pandey",
-      //   sex: "Male",
-      //   email: "anirudh.pandev@gmail.com",
-      //   age: "22",
-      //   height: "180",
-      //   weight: "62",
-      //   mets: "6.8",
-      //   history: [],
-      //   contacts: [{ id: "1", name: "Mummy", number: "+919752263660" }]
-      // })
+    console.log('start')
     localStorage
       .get('@user')
-      .then(user => user && setUser(user))
+      .then(user => {
+        console.log(`localStorage: ${JSON.stringify(user)}`)
+        if (user) {
+          console.log('updateUser initiate', 'from localStorage start')
+          updateUser(user.uid)
+        }
+      })
       .catch(err => Alert.alert("ERROR", err))
   }, [])
 
   /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Methods ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 
-  /* save user data locally */
-  const updateContacts = (contacts) => {
-    const data = {...user, contacts: contacts}
-    setUser(data)
-    localStorage.set('@user', data)
+  const updateUser = (uid, data = 0) => {
+    if (data) {
+      database()
+        .ref(`/users/${uid}`)
+        .set({...data, uid: uid})
+        .then(() => setUser({...data, uid: uid}))
+        .then(() => localStorage.set('@user', { uid: uid }))
+        .then(() => Alert.alert("SUCCESS", "Signed Up Successfully!"))
+        .catch(err => Alert.alert("ERROR", err))
+    } else {
+      database()
+        .ref(`/users/${uid}`)
+        .once("value")
+        .then(res => res.val())
+        .then(data => setUser({...data, uid: uid}))
+        .then(() => localStorage.set('@user', { uid: uid }))
+        .then(() => Alert.alert("SUCCESS", "User Information Updated Successfully!"))
+        .catch(err => Alert.alert("ERROR", err))
+    }
   }
 
   /* user auth state (signin, signup, signout) toggle */
   const onAuthStateChanged = user => {
-    /* comment out user object here */
-    // {
-    //   "uid":"8Iyt993fB1MnBc91HLJzOd7yiwF3",
-    //   "metadata":{
-    //     "creationTime":1611798642946,
-    //     "lastSignInTime":1612111033480
-    //   },
-    //   "providerId":"firebase",
-    //   "photoURL":null,
-    //   "emailVerified":false,
-    //   "providerData":[
-    //     {
-    //       "uid":"anirudh.pandev@gmail.com",
-    //       "displayName":null,
-    //       "phoneNumber":null,
-    //       "photoURL":null,
-    //       "providerId":"password",
-    //       "email":"anirudh.pandev@gmail.com"
-    //     }
-    //   ],
-    //   "email":"anirudh.pandev@gmail.com",
-    //   "isAnonymous":false,
-    //   "displayName":null,
-    //   "phoneNumber":null
-    // }
-
-    /* runs only once the app opens */
     setInitializingFirebase(false)
   }
 
@@ -148,6 +137,7 @@ const AppProvider = (props) => {
 
         user: user,
         setUser: setUser,
+        updateUser: updateUser,
 
         current: current,
         setCurrent: setCurrent,
@@ -171,8 +161,8 @@ const App: () => React$Node = () => {
         <EmergencyVolume />
         <Drawer.Navigator initialRouteName="Home" drawerType="slide" screenOptions={{ headerShown: true }}>
           <Drawer.Screen name="Profile" component={Profile} options={{ drawerLabel: props => (<ProfileDrawerItem {...props} />)}} />
-          {/* <Drawer.Screen name="Home" component={Home} /> */}
-          {/* <Drawer.Screen name="Contacts" component={Contacts} /> */}
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Contacts" component={Contacts} />
           {/* <Drawer.Screen name="History" component={History} /> */}
           {/* <Drawer.Screen name="Settings" component={Settings} /> */}
         </Drawer.Navigator>

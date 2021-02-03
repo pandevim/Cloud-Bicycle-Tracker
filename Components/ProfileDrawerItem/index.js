@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import React, { useState, useEffect, useContext } from "react"
+import { Text, View, StyleSheet } from "react-native"
 
 import { Icon } from "constants"
 
 const ProfileDrawerItem = () => {
-
   return (
   	<View style={styles.container}>
   		<View style={styles.profile}>
@@ -16,8 +15,6 @@ const ProfileDrawerItem = () => {
   	</View>
   )
 }
-
-export default ProfileDrawerItem
 
 const styles = StyleSheet.create({
   container: {
@@ -34,3 +31,5 @@ const styles = StyleSheet.create({
   	color: "red"
   }
 })
+
+export default ProfileDrawerItem
