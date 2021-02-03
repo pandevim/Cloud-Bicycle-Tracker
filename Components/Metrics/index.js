@@ -6,36 +6,42 @@ import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { useStopwatch } from "react-timer-hook"
 
 import { Icon } from "constants"
-import { time, length, cleanCoords, lineString } from "utils"
+import { time, length, cleanCoords, lineString, caloriesBurnt } from "utils"
 
 const Metrics = (props) => {
   const { journey, user } = useContext(AppContext)
 
   const {data: [path, speed]} = {data: useState(0), ...(props.state || [])}
-  const[elapsedTime, setElapsedTime] = useState("00:00:00")
-  const[maxSpeed, setMaxSpeed] = useState(0)
-  const[bmr, setBmr] = useState(0)
-  const[calories, setCalories] = useState(0)
-  const[distance, setDistance] = useState(0)
-
-  const { weight } = parseFloat(user.weight)
-  const { height } = parseFloat(user.height)
-  const { age } = parseInt(user.age)
-  const { mets } = parseInt(user.mets)
+  const [elapsedTime, setElapsedTime] = useState("00:00:00")
+  const [maxSpeed, setMaxSpeed] = useState(0)
+  const [calories, setCalories] = useState(0)
+  const [distance, setDistance] = useState(0)
 
   const { seconds, minutes, hours, start, pause, reset } = useStopwatch({ autoStart: false })
 
-  useEffect(() => {
-    setBmr((10*weight)+(6.25*height)-(5*age)+(user.sex == "Male")?(5):(-161))
-  }, [weight, height, age])
+  const weight = parseFloat(user.weight)
+  const rhr = parseFloat(user.rhr)
+  const age = parseInt(user.age)
 
   useEffect(() => {
-    setCalories((bmr*mets)/(24*time.toHour(elapsedTime)))
+    if (journey) setCalories(getCalories(distance, age, rhr, weight))
   }, [distance])
 
-  // useEffect(() => {
-  //   setDistance(length(cleanCoords(lineString(path))))
-  // }, [path])
+  const getCalories = (distance, age, rhr, weight) => {
+    return caloriesBurnt({
+      meters: distance*1000,
+      slope: 0,
+      age: age,
+      restingHeartBeatsPerMinute: rhr,
+      kilograms: weight
+    })
+
+    // return round((bmr*mets)/(24*time.toHour(elapsedTime)), 2)
+  }
+
+  useEffect(() => {
+    if (journey && path.length>=2) setDistance(length(cleanCoords(lineString(path))))
+  }, [path])
 
   useEffect(() => {
     setElapsedTime(time.toHourMinSec(hours, minutes, seconds))
@@ -91,7 +97,7 @@ const Metrics = (props) => {
         <Icon.Calories style={styles.icon} />
         <View style={styles.info}>
           <Text style={styles.value}>{ calories }kcal</Text>
-          <Text style={styles.title}>Calories</Text>
+          <Text style={styles.title}>Calories Burn</Text>
         </View>
       </View>
     </ScrollView>

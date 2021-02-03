@@ -12,22 +12,28 @@ import { auth, localStorage, database } from "utils"
 const Stack = createStackNavigator()
 
 const Profile = () => {
-  const { initializingFirebase, user, setUser, journey } = useContext(AppContext)
+  const { initializingFirebase, user, setUser } = useContext(AppContext)
 
   const [mets, setMets] = useState("6.8")
+  const [rhr, setRhr] = useState("72")
+  const [sexFactor, setsexFactor] = useState((user.sex == "Male")?(5):(-161))
   const [signedIn, setSignedIn] = useState(true)
 
+  const weight = parseFloat(user.weight)
+  const height = parseFloat(user.height)
+  const age = parseInt(user.age)
+
   useEffect(() => {
-    console.log('profile')
-    setUser({...user, mets: mets})
-    if ( user.uid && journey ) {
+    const data = {...user, rhr: rhr, mets: mets, bmr: `${(10*weight)+(6.25*height)-(5*age)+sexFactor}`}
+    if ( user.uid ) {
       console.log('profile db')
       database()
         .ref(`/users/${user.uid}`)
-        .set({...user, mets: mets})
+        .set(data)
+        .then(() => setUser(data))
         .catch(err => Alert.alert("ERROR", err))   
     }
-  }, [mets])
+  }, [mets, rhr])
 
   const signOut = () => {
     console.log('signOut')
@@ -93,6 +99,27 @@ const Profile = () => {
                 <TextInput defaultValue="kg" editable={false} />
               </View>
             </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>BMR</Text>
+              <View style={styles.specialInput}>
+                <TextInput
+                  style={{...styles.input, borderColor: "#f2f2f2"}}
+                  value={user.bmr}
+                  editable={false}
+                />
+                <TextInput defaultValue="calories/day" editable={false} />
+              </View>
+            </View>
+            <View style={{...styles.field, paddingBottom: 50}}>
+              <Text style={styles.label}>Mets</Text>
+              <Picker
+                selectedValue={rhr}
+                style={{height: 50}}
+                onValueChange={value => setRhr(value)}>
+                <Picker.Item label="72 (Men)" value="72" />
+                <Picker.Item label="76 (Women)" value="76" />
+              </Picker>
+            </View>             
             <View style={{...styles.field, paddingBottom: 50}}>
               <Text style={styles.label}>Mets</Text>
               <Picker

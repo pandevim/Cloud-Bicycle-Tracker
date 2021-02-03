@@ -26,6 +26,8 @@ const AppProvider = (props) => {
   /* Information regarding current user*/
   const [user, setUser] = useState({
     uid: "",
+    bmr: "0",
+    rhr: "0",
     weight: "0",
     sex: "",
     mets: "0",
@@ -143,7 +145,8 @@ const AppProvider = (props) => {
         setCurrent: setCurrent,
 
         journey: journey,
-        setJourney: setJourney
+        setJourney: setJourney,
+
       }}>
       {props.children}
     </AppContext.Provider>

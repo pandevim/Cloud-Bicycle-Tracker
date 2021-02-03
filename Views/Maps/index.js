@@ -50,7 +50,7 @@ const Maps = (props) => {
     		<Camera
     			followUserLocation={true}
     			followUserMode={MapboxGL.UserTrackingModes.FollowWithCourse}
-    			zoomLevel={19} />
+          followZoomLevel={17} />
       </MapView>
     }
     </View>

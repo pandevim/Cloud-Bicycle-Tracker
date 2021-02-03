@@ -12,6 +12,8 @@ import length from "@turf/length"
 import { lineString, round } from "@turf/helpers"
 import cleanCoords from "@turf/clean-coords"
 
+import caloriesBurnt from "calories-burnt"
+
 export { 
 	limit, 
 	time,
@@ -26,5 +28,7 @@ export {
 	length,
 	lineString,
 	round,
-	cleanCoords
+	cleanCoords,
+
+	caloriesBurnt
 }
