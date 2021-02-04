@@ -22,10 +22,12 @@ const Contacts = () => {
 
   useEffect(() => {
     console.log(`contacts: ${JSON.stringify(user.contacts)}`)
-    setName1(user.contacts[0].name)
-    setNumber1(user.contacts[0].number)
-    setName2(user.contacts[1].name)
-    setNumber2(user.contacts[1].number)
+    if (user.contacts) {
+      setName1(user.contacts[0].name)
+      setNumber1(user.contacts[0].number)
+      setName2(user.contacts[1].name)
+      setNumber2(user.contacts[1].number)
+    }
   }, [user])
 
   const onSubmit = data => {

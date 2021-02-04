@@ -17,7 +17,6 @@ const Profile = () => {
   const [mets, setMets] = useState("6.8")
   const [rhr, setRhr] = useState("72")
   const [sexFactor, setsexFactor] = useState((user.sex == "Male")?(5):(-161))
-  const [signedIn, setSignedIn] = useState(true)
 
   const weight = parseFloat(user.weight)
   const height = parseFloat(user.height)
@@ -33,14 +32,14 @@ const Profile = () => {
         .then(() => setUser(data))
         .catch(err => Alert.alert("ERROR", err))   
     }
-  }, [mets, rhr])
+  }, [user.uid, mets, rhr])
 
   const signOut = () => {
     console.log('signOut')
     auth()
       .signOut()
       .then(res => localStorage.delete('@user'))
-      .then(() => setSignedIn(false))
+      .then(() => setUser({...user, uid: ""}))
       .then(() => Alert.alert("SUCCESS", "Signed Out Successfully!"))
       .catch(err => Alert.alert("ERROR", err))
   }
@@ -48,7 +47,7 @@ const Profile = () => {
   if (initializingFirebase) return null
   return (
     <>
-    { user.uid && signedIn 
+    { user.uid 
       ? <View style={styles.container}>
           <View style={styles.heading}>
             <Text style={{...styles.title, color: "black"}}>Welcome, <Text style={styles.title}>{user.name}</Text></Text>
@@ -110,8 +109,8 @@ const Profile = () => {
                 <TextInput defaultValue="calories/day" editable={false} />
               </View>
             </View>
-            <View style={{...styles.field, paddingBottom: 50}}>
-              <Text style={styles.label}>Mets</Text>
+            <View style={styles.field}>
+              <Text style={styles.label}>Resting Heart Rate</Text>
               <Picker
                 selectedValue={rhr}
                 style={{height: 50}}

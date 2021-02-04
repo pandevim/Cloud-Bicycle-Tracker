@@ -62,7 +62,7 @@ const AppProvider = (props) => {
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
     ])
     .then( result => setPermissions(result))
-    .catch( err => console.warn(err) )
+    .catch( err => Alert.alert("Permission Denied", err) )
   }, [])
 
   /* call onAuthStateChanged on every auth state change */
@@ -71,22 +71,11 @@ const AppProvider = (props) => {
     return subscriber
   }, [])
 
-  useEffect(() => {
-    console.log(`change: ${JSON.stringify(user)}`)
-  }, [user])
-
   /* get user saved locally when app starts */
   useEffect(() => {
-    console.log('start')
     localStorage
       .get('@user')
-      .then(user => {
-        console.log(`localStorage: ${JSON.stringify(user)}`)
-        if (user) {
-          console.log('updateUser initiate', 'from localStorage start')
-          updateUser(user.uid)
-        }
-      })
+      .then(user => user && updateUser(user.uid))
       .catch(err => Alert.alert("ERROR", err))
   }, [])
 
