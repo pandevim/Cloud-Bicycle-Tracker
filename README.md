@@ -1,16 +1,9 @@
 # Cloud
 
-## Prerequisites
-These dependencies can be equal or greater.
-```bash
-$ nvm use latest
-$ node -v && npm -v && yarn -v
-v15.6.0
-7.4.0
-1.22.10
-```
+## Designs
+https://dribbble.com/shots/15115513-Bike-Tracking-App
 
-## Installation
+## Initialization
 ```bash
 $ npx react-native init Cloud
 ```
